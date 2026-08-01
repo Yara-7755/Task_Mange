@@ -36,7 +36,7 @@ class TaskController extends Controller
             'date' => $request->date,
             'category_id' => $request->category_id,
             'completed' => $request->has('completed'),
-            'user_id' => Auth::id(),   // ✅ هلأ بياخد id المستخدم الحقيقي المسجل دخوله
+            'user_id' => Auth::id(),
         ]);
 
 
