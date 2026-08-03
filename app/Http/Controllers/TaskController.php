@@ -36,11 +36,11 @@ class TaskController extends Controller
             'date' => $request->date,
             'category_id' => $request->category_id,
             'completed' => $request->has('completed'),
-            'user_id' => 1,
+            'user_id' => Auth::id(),
         ]);
 
 
-        return back()->with('success', 'done saved');
+        return redirect('/tasks')->with('success',  'done saved');
     }
 
     public function index()
