@@ -16,9 +16,10 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    <x-nav-link href="/tasks" :active="request()->is('tasks')">
+                     <x-nav-link href="/tasks" :active="request()->is('tasks')">
                         {{ __('My Tasks') }}
                     </x-nav-link>
+
                 </div>
             </div>
 
@@ -103,3 +104,4 @@
         </div>
     </div>
 </nav>
+
