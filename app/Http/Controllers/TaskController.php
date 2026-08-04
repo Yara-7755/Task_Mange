@@ -13,35 +13,39 @@ class TaskController extends Controller
     public function create()
     {
         $categories = Category::all();
+
         return view('tasks.create', compact('categories'));
     }
 
 
     public function store(Request $request)
     {
-
         $request->validate([
-            'name'        => 'required|string',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'date'        => 'nullable|date|after_or_equal:today',
+            'date' => 'required|date|after_or_equal:today',
             'category_id' => 'required|exists:categories,id',
+            'priority' => 'required|in:low,medium,high',
         ], [
             'date.after_or_equal' => 'Check date...',
-
         ]);
+
 
         Task::create([
             'name' => $request->name,
             'description' => $request->description,
             'date' => $request->date,
             'category_id' => $request->category_id,
+            'priority' => $request->priority,
             'completed' => $request->has('completed'),
-            'user_id' => 1,
+            'user_id' => Auth::id(),
         ]);
 
 
-        return back()->with('success', 'done saved');
+        return redirect('/tasks')
+            ->with('success', 'Task created successfully.');
     }
+
 
     public function index()
     {
@@ -58,13 +62,26 @@ class TaskController extends Controller
             return $task->date && Carbon::parse($task->date)->isPast();
         });
 
+
+        $totalTasksCount = $tasks->count();
+        $completedTasksCount = $completedTasks->count();
+
+        $progressPercentage = $totalTasksCount > 0
+            ? round(($completedTasksCount / $totalTasksCount) * 100)
+            : 0;
+
+
         return view('tasks.index', compact(
             'categories',
             'completedTasks',
             'expiredTasks',
-            'pendingTasks'
+            'pendingTasks',
+            'totalTasksCount',
+            'completedTasksCount',
+            'progressPercentage'
         ));
     }
+
 
     public function toggleComplete(Task $task)
     {
@@ -79,33 +96,34 @@ class TaskController extends Controller
     public function update(Request $request, Task $task)
     {
         $request->validate([
-            'name'        => 'required|string',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'date'        => 'nullable|date|after_or_equal:today',
+            'date' => 'required|date|after_or_equal:today',
             'category_id' => 'required|exists:categories,id',
+            'priority' => 'required|in:low,medium,high',
         ]);
+
 
         $task->update([
-            'name'        => $request->name,
+            'name' => $request->name,
             'description' => $request->description,
-            'date'        => $request->date,
+            'date' => $request->date,
             'category_id' => $request->category_id,
-            'completed'   => $request->has('completed'),
+            'priority' => $request->priority,
+            'completed' => $request->has('completed'),
         ]);
 
 
-        return back()->with('success', 'Task updated successfully');
+        return back()
+            ->with('success', 'Task updated successfully');
     }
+
 
     public function destroy(Task $task)
     {
-
         $task->delete();
-
 
         return redirect('/tasks')
             ->with('success', 'Task deleted successfully');
-
     }
-
 }

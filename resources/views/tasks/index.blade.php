@@ -58,7 +58,7 @@
             z-index: 1;
             width: 950px;
             margin: auto;
-            background: #9cb39c;
+            background: #cedfce;
             padding: 45px;
             border-radius: var(--radius-lg);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
@@ -139,6 +139,39 @@
             text-align: center;
             margin-bottom: 25px;
             font-size: 14px;
+        }
+        /* ===== Progress Bar ===== */
+        .progress-section {
+            margin-bottom: 30px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--color-text-muted);
+        }
+
+        .progress-label strong {
+            color: var(--color-text);
+            font-size: 15px;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 14px;
+            background: var(--color-border);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #164e2e, #114525);
+            border-radius: 999px;
+            transition: width 0.4s ease;
         }
 
         .error-box {
@@ -310,6 +343,102 @@
             margin-bottom:35px;
             box-shadow:0 10px 30px rgba(0,0,0,0.15);
             border:2px solid #e5e7eb;
+            .task-card {
+                background: #f9fafb;
+                border: 1px solid #e5e7eb;
+                border-radius: 20px;
+                padding: 25px;
+                margin-bottom: 20px;
+                transition: .3s;
+            }
+
+            .task-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 25px rgba(0,0,0,.12);
+            }
+
+
+            .task-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+
+            .task-header h3 {
+                color: #114525;
+                font-size: 22px;
+            }
+
+
+            .priority {
+                padding: 6px 15px;
+                border-radius: 20px;
+                color: white;
+                font-size: 14px;
+                font-weight: bold;
+            }
+
+            .priority.high {
+                background: #dc2626;
+            }
+
+            .priority.medium {
+                background: #f59e0b;
+            }
+
+            .priority.low {
+                background: #32c651;
+            }
+
+
+            .description {
+                margin: 18px 0;
+                color: #555;
+                line-height: 1.6;
+            }
+
+
+            .task-info {
+                display: flex;
+                gap: 20px;
+                color: #6b7280;
+                margin-bottom: 20px;
+            }
+
+
+            .actions {
+                display: flex;
+                justify-content: flex-end;
+                gap: 10px;
+            }
+
+
+            .actions button,
+            .edit-btn {
+                padding: 10px 18px;
+                border-radius: 12px;
+                border: none;
+                cursor: pointer;
+                color: white;
+                font-weight: bold;
+                text-decoration: none;
+            }
+
+
+            .complete-btn {
+                background: #32c651;
+            }
+
+
+            .edit-btn {
+                background: #164e2e;
+            }
+
+
+            .delete-btn {
+                background: #dc2626;
+            }
         }
     </style>
 </head>
@@ -330,7 +459,15 @@
     </div>
     <h1>My Tasks</h1>
     <p class="subtitle">Manage all your tasks in one place</p>
-
+    <div class="progress-section">
+        <div class="progress-label">
+            <span>Progress</span>
+            <strong>{{ $completedTasksCount }} / {{ $totalTasksCount }} completed ({{ $progressPercentage }}%)</strong>
+        </div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" style="width: {{ $progressPercentage }}%;"></div>
+        </div>
+    </div>
     @if(session('success'))
         <div class="success">{{ session('success') }}</div>
     @endif

@@ -6,28 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 
 class Task extends Model
 {
-    protected $fillable=[
-
+    protected $fillable = [
         'name',
         'description',
         'date',
         'user_id',
         'category_id',
         'completed',
-
-
-
+        'priority',
     ];
-    public function user(){
 
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-
-    public function category(){
+    public function category()
+    {
         return $this->belongsTo(Category::class);
     }
-
-
-
 }

@@ -291,7 +291,15 @@
         <div class="error">{{ $message }}</div>
         @enderror
 
+        <div class="mb-3">
+            <label for="priority" class="form-label">Priority</label>
 
+            <select name="priority" id="priority" class="form-select">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+            </select>
+        </div>
 
         <label for="category_id">Category</label>
 
