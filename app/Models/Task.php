@@ -6,17 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Task extends Model
 {
-    protected $fillable=[
-
+    protected $fillable = [
         'name',
         'description',
         'date',
         'user_id',
         'category_id',
         'completed',
-
-
-
+        'completed_at',
+        'priority',
+        'time_spent',
+        'repeat_type',
+        'repeat_interval_minutes',
+        'repeated',
     ];
     public function user(){
 
