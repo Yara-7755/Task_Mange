@@ -6,17 +6,48 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Task;
 use Carbon\Carbon;
+
+Route::get('/', function () {
+    return redirect('/login');
+});
+
 Route::get('/dashboard', function () {
-    $tasks = \Illuminate\Support\Facades\Auth::user()->tasks()
-        ->where('completed', false)
+    $allTasks = \Illuminate\Support\Facades\Auth::user()->tasks;
+
+    $pendingTasks = $allTasks->where('completed', false)->filter(function ($task) {
+        return !$task->date || !\Carbon\Carbon::parse($task->date)->isPast();
+    });
+    $expiredTasks = $allTasks->where('completed', false)->filter(function ($task) {
+        return $task->date && \Carbon\Carbon::parse($task->date)->isPast();
+    });
+    $completedTodayCount = $allTasks->where('completed', true)->filter(function ($task) {
+        return $task->completed_at && \Carbon\Carbon::parse($task->completed_at)->isToday();
+    })->count();
+
+    $highPriorityTasks = $pendingTasks->where('priority', 'high');
+
+    $topTags = \App\Models\Tag::withCount(['tasks' => function ($query) {
+        $query->where('user_id', \Illuminate\Support\Facades\Auth::id());
+    }])
         ->get()
-        ->filter(function ($task) {
-            return !$task->date || !\Carbon\Carbon::parse($task->date)->isPast();
-        });
+        ->filter(function ($tag) {
+            return $tag->tasks_count > 0;
+        })
+        ->sortByDesc('tasks_count')
+        ->take(5);
 
-    return view('dashboard', compact('tasks'));
+    $pendingCount = $pendingTasks->count();
+    $expiredCount = $expiredTasks->count();
+
+    return view('dashboard', compact(
+        'pendingTasks',
+        'pendingCount',
+        'expiredCount',
+        'completedTodayCount',
+        'highPriorityTasks',
+        'topTags'
+    ));
 })->middleware(['auth', 'verified'])->name('dashboard');
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -30,6 +61,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/tasks', [TaskController::class, 'store']);
     Route::get('/tasks', [TaskController::class, 'index']);
     Route::patch('/tasks/{task}/toggle', [TaskController::class, 'toggleComplete']);
+    Route::delete('/tasks/clear-expired', [TaskController::class, 'clearExpired']);
 });
 
 Route::middleware(['auth', 'check.task.owner'])->group(function () {

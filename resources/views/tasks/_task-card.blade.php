@@ -1,5 +1,4 @@
 <div class="task-card">
-    <!-- Update Form -->
     @php
         $repeatValue = null;
         $repeatUnit = 'minutes';
@@ -21,6 +20,15 @@
         <input type="text" name="name" value="{{ $task->name }}">
         <label>Description</label>
         <textarea name="description">{{ $task->description }}</textarea>
+        @if ($task->tags->count())
+            <div style="margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap;">
+                @foreach ($task->tags as $tag)
+                    <span style="background: #e0f2e9; color: #166534; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: bold;">
+                #{{ $tag->name }}
+            </span>
+                @endforeach
+            </div>
+        @endif
         <label>Date</label>
         <input type="date" name="date" value="{{ $task->date }}">
         <label>Category</label>
@@ -95,7 +103,6 @@
             <label for="completed_{{ $task->id }}">Completed</label>
         </form>
     </div>
-    <!-- Actions row: Update button (linked to the form above via form="") + Delete form, side by side -->
     <div class="actions">
         <button type="submit" form="update-form-{{ $task->id }}" class="update-btn">Update Task</button>
 
