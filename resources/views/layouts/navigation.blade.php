@@ -1,3 +1,4 @@
+<h1 style="color:red">TEST TEST</h1>
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -25,7 +26,12 @@
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
-
+                <div>
+                    User ID: {{ Auth::id() }}
+                    <br>
+                    Notifications: {{ Auth::user()->unreadNotifications->count() }}
+                </div>
+                <h1 style="color:red">TEST</h1>
                 <!-- Notifications Bell -->
                 <div class="relative me-4" x-data="{ notifOpen: false }">
                     <button @click="notifOpen = !notifOpen" @click.away="notifOpen = false"
@@ -45,7 +51,7 @@
                     <div x-show="notifOpen" x-cloak
                          class="absolute right-0 z-50 mt-2 w-80 bg-white rounded-md shadow-lg border border-gray-200">
                         <div class="py-2 max-h-96 overflow-y-auto">
-                            @forelse(Auth::user()->notifications->take(10) as $notification)
+                            @forelse(Auth::user()->unreadNotifications->take(10) as $notification)
                                 <div class="px-4 py-3 border-b border-gray-100 {{ $notification->read_at ? 'bg-white' : 'bg-green-50' }}">
                                     <p class="text-sm text-gray-700">{{ $notification->data['message'] ?? '' }}</p>
                                     <p class="text-xs text-gray-400 mt-1">{{ $notification->created_at->diffForHumans() }}</p>

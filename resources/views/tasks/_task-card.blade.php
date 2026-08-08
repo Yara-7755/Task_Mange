@@ -26,10 +26,10 @@
 
     <div class="actions">
 
-        <!-- Complete Button -->
+
         <form action="/tasks/{{ $task->id }}/toggle" method="POST">
             @csrf
-
+            @method('PATCH')
             <button type="submit" class="complete-btn">
                 @if($task->completed)
                     Undo

@@ -19,13 +19,11 @@ class TaskDueSoon extends Notification implements ShouldQueue
         $this->task = $task;
     }
 
-    // وين بدنا نرسل الإشعار: إيميل + داخل الموقع
     public function via(object $notifiable): array
     {
         return ['mail', 'database'];
     }
 
-    // شكل الإيميل
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
@@ -36,7 +34,6 @@ class TaskDueSoon extends Notification implements ShouldQueue
             ->line('لا تنسى تخلصها بالوقت المحدد!');
     }
 
-    // شكل الإشعار الداخلي (اللي بيتخزن بجدول notifications)
     public function toArray(object $notifiable): array
     {
         return [
