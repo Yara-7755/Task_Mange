@@ -21,6 +21,10 @@
                         {{ __('My Tasks') }}
                     </x-nav-link>
 
+
+                    <x-nav-link href="/tasks/create" :active="request()->is('tasks/create')">
+                        {{ __('Create Task') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -83,8 +87,7 @@
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
-                        <!-- A
-                        uthentication -->
+
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
 

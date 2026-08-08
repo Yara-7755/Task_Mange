@@ -7,7 +7,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-
+use App\Models\Tag;
 class TaskController extends Controller
 {
     public function create()
@@ -37,8 +37,7 @@ class TaskController extends Controller
                 : $request->repeat_interval_value;
         }
 
-
-        Task::create([
+        $task = Task::create([
             'name'                    => $request->name,
             'description'             => $request->description,
             'date'                    => $request->date,
@@ -50,23 +49,47 @@ class TaskController extends Controller
             'user_id'                 => Auth::id(),
         ]);
 
+        $this->syncTags($task, $request->tags);
 
-        return redirect('/tasks')
-            ->with('success', 'Task created successfully.');
+        return redirect('/tasks')->with('success', 'done saved');
     }
-
 
     public function index(Request $request)
     {
-        $query = Auth::user()->tasks();
+        $query = Auth::user()->tasks()->with('tags');
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $search = trim($request->search);
+            $words = preg_split('/\s+/', $search);
+
+            $query->where(function ($q) use ($words, $search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%')
+                    ->orWhereHas('tags', function ($tagQuery) use ($search) {
+                        $tagQuery->where('name', 'like', '%' . $search . '%');
+                    });
+
+                foreach ($words as $word) {
+                    if (strlen($word) >= 2) {
+                        $q->orWhere('name', 'like', '%' . $word . '%')
+                            ->orWhere('description', 'like', '%' . $word . '%')
+                            ->orWhereHas('tags', function ($tagQuery) use ($word) {
+                                $tagQuery->where('name', 'like', '%' . $word . '%');
+                            });
+                    }
+                }
+            });
         }
 
-        if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
+        if ($request->filled('filter_type') && $request->filled('filter_value')) {
+            if ($request->filter_type === 'category') {
+                $query->where('category_id', $request->filter_value);
+            } elseif ($request->filter_type === 'priority') {
+                $query->where('priority', $request->filter_value);
+            }
         }
+
+        $query->latest();
 
         $tasks = $query->get();
         $categories = Category::all();
@@ -151,7 +174,7 @@ class TaskController extends Controller
             'repeat_type'             => $request->repeat_type ?? 'none',
             'repeat_interval_minutes' => $repeatMinutes,
         ]);
-
+        $this->syncTags($task, $request->tags);
 
         return back()
             ->with('success', 'Task updated successfully');
@@ -167,6 +190,35 @@ class TaskController extends Controller
         return redirect('/tasks')
             ->with('success', 'Task deleted successfully');
 
+    }
+    public function clearExpired()
+    {
+        $expiredIds = Auth::user()->tasks()
+            ->where('completed', false)
+            ->get()
+            ->filter(function ($task) {
+                return $task->date && Carbon::parse($task->date)->isPast();
+            })
+            ->pluck('id');
+
+        Task::whereIn('id', $expiredIds)->delete();
+
+        return back()->with('success', 'All expired tasks were deleted.');
+    }
+    private function syncTags(Task $task, ?string $tagsInput): void
+    {
+        if (! $tagsInput) {
+            $task->tags()->sync([]);
+            return;
+        }
+
+        $tagNames = array_filter(array_map('trim', explode(',', $tagsInput)));
+
+        $tagIds = collect($tagNames)->map(function ($name) {
+            return Tag::firstOrCreate(['name' => strtolower($name)])->id;
+        });
+
+        $task->tags()->sync($tagIds);
     }
 
 }

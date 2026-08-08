@@ -3,12 +3,59 @@
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Dashboard') }}
         </h2>
+        <div style="display: flex; gap: 20px; margin-bottom: 30px; max-width: 900px; margin-left: auto; margin-right: auto;">
+
+            <div style="flex: 1; background: white; border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+                <div style="font-size: 32px; font-weight: bold; color: #164e2e;">{{ $pendingCount }}</div>
+                <div style="color: #666; margin-top: 5px;">⏳ Pending Tasks</div>
+            </div>
+
+            <div style="flex: 1; background: white; border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+                <div style="font-size: 32px; font-weight: bold; color: #dc2626;">{{ $expiredCount }}</div>
+                <div style="color: #666; margin-top: 5px;">⚠️ Expired Tasks</div>
+            </div>
+
+            <div style="flex: 1; background: white; border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+                <div style="font-size: 32px; font-weight: bold; color: #16a34a;">{{ $completedTodayCount }}</div>
+                <div style="color: #666; margin-top: 5px;">✅ Completed Today</div>
+            </div>
+
+        </div>
+        @if ($highPriorityTasks->count())
+            <div style="max-width: 900px; margin: 0 auto 30px; background: white; border-radius: 16px; padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+                <h3 style="color: #114525; margin-bottom: 15px;">🔥 High Priority Tasks</h3>
+
+                @foreach ($highPriorityTasks as $task)
+                    <div style="padding: 12px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                        <span>{{ $task->name }}</span>
+                        @if ($task->date)
+                            <span style="color: #999; font-size: 13px;">{{ \Carbon\Carbon::parse($task->date)->format('M d') }}</span>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
+        @if ($topTags->count())
+            <div style="max-width: 900px; margin: 0 auto 30px; background: white; border-radius: 16px; padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+                <h3 style="color: #114525; margin-bottom: 15px;">🏷️ Top Tags</h3>
+
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    @foreach ($topTags as $tag)
+                        <a href="/tasks?search={{ $tag->name }}" style="text-decoration: none; background: #e0f2e9; color: #166534; padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 14px;">
+                            #{{ $tag->name }} ({{ $tag->tasks_count }})
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
         <div style="max-width: 550px; margin: 40px auto; background: white; border-radius: 240px; padding: 55px 45px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center;">
             <h2 style="font-size: 26px; margin-bottom: 25px; color: #114525;">⏱️ Focus Timer</h2>
 
             <select id="taskSelect" style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #e5e7eb; margin-bottom: 35px; font-size: 16px;">
                 <option value="">-- Select a task --</option>
-                @foreach ($tasks as $task)
+                @foreach ($pendingTasks as $task)
                     <option value="{{ $task->id }}">{{ $task->name }}</option>
                 @endforeach
             </select>
