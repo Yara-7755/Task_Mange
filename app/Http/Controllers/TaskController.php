@@ -16,6 +16,7 @@ class TaskController extends Controller
         return view('tasks.create', compact('categories'));
     }
 
+
     public function store(Request $request)
     {
         $request->validate([
@@ -36,6 +37,7 @@ class TaskController extends Controller
                 : $request->repeat_interval_value;
         }
 
+
         Task::create([
             'name'                    => $request->name,
             'description'             => $request->description,
@@ -48,8 +50,11 @@ class TaskController extends Controller
             'user_id'                 => Auth::id(),
         ]);
 
-        return redirect('/tasks')->with('success', 'done saved');
+
+        return redirect('/tasks')
+            ->with('success', 'Task created successfully.');
     }
+
 
     public function index(Request $request)
     {
@@ -76,11 +81,23 @@ class TaskController extends Controller
             return $task->date && Carbon::parse($task->date)->isPast();
         });
 
+
+        $totalTasksCount = $tasks->count();
+        $completedTasksCount = $completedTasks->count();
+
+        $progressPercentage = $totalTasksCount > 0
+            ? round(($completedTasksCount / $totalTasksCount) * 100)
+            : 0;
+
+
         return view('tasks.index', compact(
             'categories',
             'completedTasks',
             'expiredTasks',
-            'pendingTasks'
+            'pendingTasks',
+            'totalTasksCount',
+            'completedTasksCount',
+            'progressPercentage'
         ));
     }
     public function addTime(Request $request, Task $task)
@@ -102,6 +119,8 @@ class TaskController extends Controller
 
         return back();
     }
+
+
     public function update(Request $request, Task $task)
     {
         $request->validate([
@@ -133,14 +152,21 @@ class TaskController extends Controller
             'repeat_interval_minutes' => $repeatMinutes,
         ]);
 
-        return back()->with('success', 'Task updated successfully');
+
+        return back()
+            ->with('success', 'Task updated successfully');
     }
+
 
     public function destroy(Task $task)
     {
+
         $task->delete();
+
 
         return redirect('/tasks')
             ->with('success', 'Task deleted successfully');
+
     }
+
 }

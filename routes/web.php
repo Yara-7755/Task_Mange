@@ -7,16 +7,12 @@ use App\Http\Controllers\ProfileController;
 use App\Models\Task;
 use Carbon\Carbon;
 Route::get('/dashboard', function () {
-    $tasks = \Illuminate\Support\Facades\Auth::user()->tasks()
-        ->where('completed', false)
-        ->get()
-        ->filter(function ($task) {
-            return !$task->date || !\Carbon\Carbon::parse($task->date)->isPast();
-        });
+    $todaysTasks = auth()->user()->tasks()
+        ->whereDate('date', now()->toDateString())
+        ->get();
 
-    return view('dashboard', compact('tasks'));
+    return view('dashboard', compact('todaysTasks'));
 })->middleware(['auth', 'verified'])->name('dashboard');
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
