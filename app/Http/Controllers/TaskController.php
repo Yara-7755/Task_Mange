@@ -13,7 +13,6 @@ class TaskController extends Controller
     public function create()
     {
         $categories = Category::all();
-
         return view('tasks.create', compact('categories'));
     }
 
@@ -21,24 +20,34 @@ class TaskController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'date' => 'required|date|after_or_equal:today',
-            'category_id' => 'required|exists:categories,id',
-            'priority' => 'required|in:low,medium,high',
-        ], [
-            'date.after_or_equal' => 'Check date...',
+            'name'                  => 'required|string',
+            'description'           => 'nullable|string',
+            'date'                  => 'nullable|date|after_or_equal:today',
+            'category_id'           => 'required|exists:categories,id',
+            'priority'              => 'required|in:low,medium,high',
+            'repeat_type'           => 'nullable|in:none,daily,weekly,custom',
+            'repeat_interval_value' => 'nullable|integer|min:1',
+            'repeat_interval_unit'  => 'nullable|in:minutes,hours',
         ]);
+
+        $repeatMinutes = null;
+        if ($request->repeat_type === 'custom' && $request->repeat_interval_value) {
+            $repeatMinutes = $request->repeat_interval_unit === 'hours'
+                ? $request->repeat_interval_value * 60
+                : $request->repeat_interval_value;
+        }
 
 
         Task::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'date' => $request->date,
-            'category_id' => $request->category_id,
-            'priority' => $request->priority,
-            'completed' => $request->has('completed'),
-            'user_id' => Auth::id(),
+            'name'                    => $request->name,
+            'description'             => $request->description,
+            'date'                    => $request->date,
+            'category_id'             => $request->category_id,
+            'completed'               => $request->has('completed'),
+            'priority'                => $request->priority,
+            'repeat_type'             => $request->repeat_type ?? 'none',
+            'repeat_interval_minutes' => $repeatMinutes,
+            'user_id'                 => Auth::id(),
         ]);
 
 
@@ -47,9 +56,19 @@ class TaskController extends Controller
     }
 
 
-    public function index()
+    public function index(Request $request)
     {
-        $tasks = Auth::user()->tasks;
+        $query = Auth::user()->tasks();
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        $tasks = $query->get();
         $categories = Category::all();
 
         $completedTasks = $tasks->where('completed', true);
@@ -81,12 +100,21 @@ class TaskController extends Controller
             'progressPercentage'
         ));
     }
+    public function addTime(Request $request, Task $task)
+    {
+        $task->increment('time_spent', $request->seconds);
 
+        return response()->json(['success' => true]);
+    }
 
     public function toggleComplete(Task $task)
     {
+        $completed = ! $task->completed;
+
         $task->update([
-            'completed' => ! $task->completed,
+            'completed'   => $completed,
+            'completed_at'=> $completed ? now() : null,
+            'repeated'    => false,
         ]);
 
         return back();
@@ -96,21 +124,32 @@ class TaskController extends Controller
     public function update(Request $request, Task $task)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'date' => 'required|date|after_or_equal:today',
-            'category_id' => 'required|exists:categories,id',
-            'priority' => 'required|in:low,medium,high',
+            'name'                  => 'required|string',
+            'description'           => 'nullable|string',
+            'date'                  => 'nullable|date',
+            'category_id'           => 'required|exists:categories,id',
+            'priority'              => 'required|in:low,medium,high',
+            'repeat_type'           => 'nullable|in:none,daily,weekly,custom',
+            'repeat_interval_value' => 'nullable|integer|min:1',
+            'repeat_interval_unit'  => 'nullable|in:minutes,hours',
         ]);
 
+        $repeatMinutes = null;
+        if ($request->repeat_type === 'custom' && $request->repeat_interval_value) {
+            $repeatMinutes = $request->repeat_interval_unit === 'hours'
+                ? $request->repeat_interval_value * 60
+                : $request->repeat_interval_value;
+        }
 
         $task->update([
-            'name' => $request->name,
-            'description' => $request->description,
-            'date' => $request->date,
-            'category_id' => $request->category_id,
-            'priority' => $request->priority,
-            'completed' => $request->has('completed'),
+            'name'                    => $request->name,
+            'description'             => $request->description,
+            'date'                    => $request->date,
+            'category_id'             => $request->category_id,
+            'completed'               => $request->has('completed'),
+            'priority'                => $request->priority,
+            'repeat_type'             => $request->repeat_type ?? 'none',
+            'repeat_interval_minutes' => $repeatMinutes,
         ]);
 
 
@@ -121,9 +160,13 @@ class TaskController extends Controller
 
     public function destroy(Task $task)
     {
+
         $task->delete();
+
 
         return redirect('/tasks')
             ->with('success', 'Task deleted successfully');
+
     }
+
 }

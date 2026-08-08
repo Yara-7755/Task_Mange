@@ -13,16 +13,23 @@ class Task extends Model
         'user_id',
         'category_id',
         'completed',
+        'completed_at',
         'priority',
+        'time_spent',
+        'repeat_type',
+        'repeat_interval_minutes',
+        'repeated',
     ];
+    public function user(){
 
-    public function user()
-    {
         return $this->belongsTo(User::class);
     }
 
-    public function category()
-    {
+
+    public function category(){
         return $this->belongsTo(Category::class);
     }
+
+
+
 }
