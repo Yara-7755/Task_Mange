@@ -183,14 +183,38 @@
             }
         </script>
     </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    {{ __("You're logged in!") }}
-                </div>
-            </div>
+@section('title', 'Dashboard - Task Manager')
+
+@section('content')
+
+    <div class="hero-panel">
+        <div class="page-header">
+            <div class="icon-box">🏠</div>
         </div>
+        <h1>Dashboard</h1>
+        <p class="subtitle">Here's what's on your plate today</p>
     </div>
-</x-app-layout>
+
+    <div class="task-section">
+
+        <h2><span class="section-badge badge-pending">📌</span> Today's Tasks</h2>
+
+        @if($todaysTasks->isEmpty())
+            <p class="empty-msg">No tasks due today.</p>
+        @endif
+
+        @foreach($todaysTasks as $task)
+            <div class="task-card" style="padding: 16px 22px;">
+                <h3 style="font-family: var(--font-display); color: var(--color-ink); font-size: 17px; font-weight: 600;">
+                    {{ $task->name }}
+                </h3>
+            </div>
+        @endforeach
+
+    </div>
+
+    <a href="/tasks" class="add-btn">View All Tasks</a>
+
+@endsection

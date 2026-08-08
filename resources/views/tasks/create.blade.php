@@ -1,3 +1,21 @@
+@extends('layouts.app')
+@section('title', 'Add Task - Task Manager')
+@section('content')
+    <div class="hero-panel">
+        <div class="page-header">
+            <div class="icon-box">📝</div>
+        </div>
+        <h1>Task Manager</h1>
+        <p class="subtitle">Create a new task and stay organized</p>
+    </div>
+    @if (session('success'))
+        <div class="success">
+            {{ session('success') }}
+        </div>
+    @endif
+    <div class="task-card form-card">
+        <form action="/tasks" method="POST">
+            @csrf
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -179,29 +197,50 @@
 
                 @csrf
 
-                <label for="name">Title of Task</label>
-                <input
-                    type="text"
-                    name="name"
-                    id="name"
-                    placeholder="Enter task title"
-                    value="{{ old('name') }}"
-                >
+            <div class="form-row">
+                <div>
+                    <label for="name">Title of Task</label>
+                    <input
+                        type="text"
+                        name="name"
+                        id="name"
+                        placeholder="Enter task title"
+                        value="{{ old('name') }}"
+                    >
+                    @error('name')
+                    <div class="error">{{ $message }}</div>
+                    @enderror
+                </div>
 
-                @error('name')
-                <div class="error">{{ $message }}</div>
-                @enderror
+                <div>
+                    <label for="category_id">Category</label>
+                    <select name="category_id" id="category_id">
+                        <option value="">
+                            -- Select Category --
+                        </option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}"
+                                {{ old('category_id') == $category->id ? 'selected' : '' }}
+                            >
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('category_id')
+                    <div class="error">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
 
-                <label for="description">Description</label>
-                <textarea
-                    name="description"
-                    id="description"
-                    placeholder="Write task description..."
-                >{{ old('description') }}</textarea>
-
-                @error('description')
-                <div class="error">{{ $message }}</div>
-                @enderror
+            <label for="description">Description</label>
+            <textarea
+                name="description"
+                id="description"
+                placeholder="Write task description..."
+            >{{ old('description') }}</textarea>
+            @error('description')
+            <div class="error">{{ $message }}</div>
+            @enderror
 
                 <label for="date">Date</label>
                 <input
@@ -278,20 +317,18 @@
                     <option value="high">High</option>
                 </select>
 
-                <div class="checkbox">
 
-                    <input
-                        type="checkbox"
-                        name="completed"
-                        id="completed"
-                        value="1"
-                    >
-
-                    <label for="completed">
-                        Completed
-                    </label>
-
-                </div>
+            <div class="checkbox">
+                <input
+                    type="checkbox"
+                    name="completed"
+                    id="completed"
+                    value="1"
+                >
+                <label for="completed">
+                    Completed
+                </label>
+            </div>
 
                 <label for="tags">Tags (comma separated)</label>
                 <input
@@ -322,3 +359,4 @@
         }
     </script>
 </x-app-layout>
+@endsection

@@ -16,6 +16,7 @@ class TaskController extends Controller
         return view('tasks.create', compact('categories'));
     }
 
+
     public function store(Request $request)
     {
         $request->validate([
@@ -78,7 +79,7 @@ class TaskController extends Controller
                     }
                 }
             });
-        } // 👈 هاد القوس كان ناقص، هو يلي بيقفل شرط السيرش
+        }
 
         if ($request->filled('filter_type') && $request->filled('filter_value')) {
             if ($request->filter_type === 'category') {
@@ -103,11 +104,23 @@ class TaskController extends Controller
             return $task->date && Carbon::parse($task->date)->isPast();
         });
 
+
+        $totalTasksCount = $tasks->count();
+        $completedTasksCount = $completedTasks->count();
+
+        $progressPercentage = $totalTasksCount > 0
+            ? round(($completedTasksCount / $totalTasksCount) * 100)
+            : 0;
+
+
         return view('tasks.index', compact(
             'categories',
             'completedTasks',
             'expiredTasks',
-            'pendingTasks'
+            'pendingTasks',
+            'totalTasksCount',
+            'completedTasksCount',
+            'progressPercentage'
         ));
     }
     public function addTime(Request $request, Task $task)
@@ -129,6 +142,8 @@ class TaskController extends Controller
 
         return back();
     }
+
+
     public function update(Request $request, Task $task)
     {
         $request->validate([
@@ -160,15 +175,21 @@ class TaskController extends Controller
             'repeat_interval_minutes' => $repeatMinutes,
         ]);
         $this->syncTags($task, $request->tags);
-        return back()->with('success', 'Task updated successfully');
+
+        return back()
+            ->with('success', 'Task updated successfully');
     }
+
 
     public function destroy(Task $task)
     {
+
         $task->delete();
+
 
         return redirect('/tasks')
             ->with('success', 'Task deleted successfully');
+
     }
     public function clearExpired()
     {
@@ -199,4 +220,5 @@ class TaskController extends Controller
 
         $task->tags()->sync($tagIds);
     }
+
 }

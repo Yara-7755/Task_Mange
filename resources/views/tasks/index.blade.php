@@ -1,24 +1,23 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('My Tasks') }}
-        </h2>
-    </x-slot>
-
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Tasks - Task Manager</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        .task-page * {
+        * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .task-page {
+        body {
             background: linear-gradient(135deg, rgb(15 69 24 / 0.35), #054221);
             min-height: 100vh;
             padding: 40px;
-            margin: -1.5rem -1rem;
         }
 
-        .task-page .container {
+        .container {
             width: 950px;
             margin: auto;
             background: white;
@@ -27,20 +26,20 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.25);
         }
 
-        .task-page h1 {
+        h1 {
             text-align: center;
             color: #114525;
             font-size: 34px;
             margin-bottom: 10px;
         }
 
-        .task-page .subtitle {
+        .subtitle {
             text-align: center;
             color: #666;
             margin-bottom: 30px;
         }
 
-        .task-page .success {
+        .success {
             background: #dcfce7;
             color: #166534;
             padding: 15px;
@@ -50,13 +49,25 @@
         }
 
         /* فورم البحث */
-        .task-page .search-form {
+        .search-form {
             display: flex;
             gap: 15px;
             margin-bottom: 30px;
         }
 
-        .task-page .search-form button {
+        .search-form input,
+        .search-form select {
+            padding: 14px;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            font-size: 16px;
+        }
+
+        .search-form input {
+            flex: 1;
+        }
+
+        .search-form button {
             padding: 14px 28px;
             border: none;
             border-radius: 12px;
@@ -66,7 +77,8 @@
             cursor: pointer;
         }
 
-        .task-page .section-box {
+        /* الصندوق المقفول (Collapsed) */
+        .section-box {
             background: #f9fafb;
             border: 2px solid #e5e7eb;
             border-radius: 20px;
@@ -79,13 +91,13 @@
             transition: 0.25s;
         }
 
-        .task-page .section-box:hover {
+        .section-box:hover {
             border-color: #164e2e;
             box-shadow: 0 8px 20px rgba(0,0,0,0.08);
             transform: translateY(-2px);
         }
 
-        .task-page .section-title {
+        .section-title {
             font-size: 20px;
             font-weight: bold;
             color: #114525;
@@ -94,7 +106,7 @@
             gap: 10px;
         }
 
-        .task-page .count-badge {
+        .count-badge {
             background: #164e2e;
             color: white;
             border-radius: 20px;
@@ -103,12 +115,13 @@
             font-weight: bold;
         }
 
-        .task-page .arrow {
+        .arrow {
             font-size: 20px;
             color: #164e2e;
         }
 
-        .task-page .fullscreen-overlay {
+        /* العرض الفل سكرين */
+        .fullscreen-overlay {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
@@ -118,7 +131,7 @@
             padding: 40px;
         }
 
-        .task-page .fullscreen-inner {
+        .fullscreen-inner {
             max-width: 900px;
             margin: auto;
             background: white;
@@ -126,19 +139,19 @@
             padding: 45px;
         }
 
-        .task-page .fullscreen-header {
+        .fullscreen-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
         }
 
-        .task-page .fullscreen-header h2 {
+        .fullscreen-header h2 {
             color: #114525;
             font-size: 28px;
         }
 
-        .task-page .close-btn {
+        .close-btn {
             width: 45px;
             height: 45px;
             border-radius: 50%;
@@ -149,13 +162,13 @@
             cursor: pointer;
         }
 
-        .task-page .empty-msg {
+        .empty-msg {
             text-align: center;
             color: #999;
             padding: 30px;
         }
 
-        .task-page .add-btn {
+        .add-btn {
             display: block;
             text-align: center;
             margin-top: 30px;
@@ -167,40 +180,15 @@
             font-size: 18px;
             font-weight: bold;
         }
-
-        .task-page .search-wrapper {
-            position: relative;
-            flex: 1;
-        }
-
-        .task-page .search-wrapper input {
-            width: 100%;
-            padding: 14px 40px 14px 14px;
-            border-radius: 12px;
-            border: 2px solid #e5e7eb;
-            font-size: 16px;
-        }
-
-        .task-page .clear-btn {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #999;
-            font-size: 18px;
-            cursor: pointer;
-            display: none;
-        }
     </style>
+</head>
 
-    <div class="task-page" x-data="{ activeSection: null }">
+<body x-data="{ activeSection: null }">
 
-        <div class="container">
+<div class="container">
 
-            <h1>📝 My Tasks</h1>
-            <p class="subtitle">Manage all your tasks in one place</p>
+    <h1>📝 My Tasks</h1>
+    <p class="subtitle">Manage all your tasks in one place</p>
 
             @if (session('success'))
                 <div class="success">{{ session('success') }}</div>
@@ -231,13 +219,17 @@
                 <button type="submit">Search</button>
             </form>
 
-            <div class="section-box" @click="activeSection = 'pending'">
-                <div class="section-title">⏳ Pending Tasks</div>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <span class="count-badge">{{ $pendingTasks->count() }}</span>
-                    <span class="arrow">▸</span>
-                </div>
-            </div>
+    <div class="section-box" @click="activeSection = 'pending'">
+        <div class="section-title">⏳ Pending Tasks</div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <span class="count-badge">{{ $pendingTasks->count() }}</span>
+            <span class="arrow">▸</span>
+        </div>
+    </div>
+    <div class="tasks-grid">
+
+        {{-- قسم Pending --}}
+        <div class="task-section pending-section">
 
             <div class="section-box" @click="activeSection = 'expired'">
                 <div class="section-title">⚠️ Expired Tasks</div>
@@ -259,16 +251,20 @@
 
         </div>
 
-        <div class="fullscreen-overlay" x-show="activeSection === 'pending'" x-cloak style="display: none;">
-            <div class="fullscreen-inner">
-                <div class="fullscreen-header">
-                    <h2>⏳ Pending Tasks</h2>
-                    <button class="close-btn" @click="activeSection = null">×</button>
-                </div>
+<div class="fullscreen-overlay" x-show="activeSection === 'pending'" x-cloak style="display: none;">
+    <div class="fullscreen-inner">
+        <div class="fullscreen-header">
+            <h2>⏳ Pending Tasks</h2>
+            <button class="close-btn" @click="activeSection = null">×</button>
+        </div>
+            <h2><span class="section-badge badge-pending">⏳</span> Pending Tasks</h2>
 
-                @if ($pendingTasks->isEmpty())
-                    <p class="empty-msg">No pending tasks.</p>
-                @endif
+        @if ($pendingTasks->isEmpty())
+            <p class="empty-msg">No pending tasks.</p>
+        @endif
+            @if($pendingTasks->isEmpty())
+                <p class="empty-msg">No pending tasks.</p>
+            @endif
 
                 @foreach ($pendingTasks as $task)
                     @include('tasks._task-card', ['task' => $task, 'categories' => $categories])
@@ -276,12 +272,21 @@
             </div>
         </div>
 
-        <div class="fullscreen-overlay" x-show="activeSection === 'expired'" x-cloak style="display: none;">
-            <div class="fullscreen-inner">
-                <div class="fullscreen-header">
-                    <h2>⚠️ Expired Tasks</h2>
-                    <button class="close-btn" @click="activeSection = null">×</button>
-                </div>
+<div class="fullscreen-overlay" x-show="activeSection === 'expired'" x-cloak style="display: none;">
+    <div class="fullscreen-inner">
+        <div class="fullscreen-header">
+            <h2>⚠️ Expired Tasks</h2>
+            <button class="close-btn" @click="activeSection = null">×</button>
+        </div>
+            @foreach($pendingTasks as $task)
+                @include('tasks._task-card', ['task' => $task, 'categories' => $categories])
+            @endforeach
+
+        </div>
+
+        <div class="task-section expired-section">
+
+            <h2><span class="section-badge badge-expired">⚠️</span> Expired Tasks</h2>
 
                 @if ($expiredTasks->isNotEmpty())
                     <form action="/tasks/clear-expired" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete all expired tasks? This cannot be undone.')" style="margin-bottom: 20px;">
@@ -296,19 +301,31 @@
                 @if ($expiredTasks->isEmpty())
                     <p class="empty-msg">No expired tasks.</p>
                 @endif
+            @if($expiredTasks->isEmpty())
+                <p class="empty-msg">No expired tasks.</p>
+            @endif
+        @if ($expiredTasks->isEmpty())
+            <p class="empty-msg">No expired tasks.</p>
+        @endif
 
-                @foreach ($expiredTasks as $task)
-                    @include('tasks._task-card', ['task' => $task, 'categories' => $categories])
-                @endforeach
-            </div>
+            @foreach($expiredTasks as $task)
+                @include('tasks._task-card', ['task' => $task, 'categories' => $categories])
+            @endforeach
+
         </div>
+        @foreach ($expiredTasks as $task)
+            @include('tasks._task-card', ['task' => $task, 'categories' => $categories])
+        @endforeach
+    </div>
+</div>
 
-        <div class="fullscreen-overlay" x-show="activeSection === 'completed'" x-cloak style="display: none;">
-            <div class="fullscreen-inner">
-                <div class="fullscreen-header">
-                    <h2>✅ Completed Tasks</h2>
-                    <button class="close-btn" @click="activeSection = null">×</button>
-                </div>
+<div class="fullscreen-overlay" x-show="activeSection === 'completed'" x-cloak style="display: none;">
+    <div class="fullscreen-inner">
+        <div class="fullscreen-header">
+            <h2>✅ Completed Tasks</h2>
+            <button class="close-btn" @click="activeSection = null">×</button>
+        </div>
+        <div class="task-section completed-section">
 
                 @if ($completedTasks->isNotEmpty())
                     <form action="/tasks/clear-completed" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete all completed tasks? This cannot be undone.')" style="margin-bottom: 20px;">
@@ -323,6 +340,14 @@
                 @if ($completedTasks->isEmpty())
                     <p class="empty-msg">No completed tasks yet.</p>
                 @endif
+            <h2><span class="section-badge badge-completed">✅</span> Completed Tasks</h2>
+
+            @if($completedTasks->isEmpty())
+                <p class="empty-msg">No completed tasks yet.</p>
+            @endif
+        @if ($completedTasks->isEmpty())
+            <p class="empty-msg">No completed tasks yet.</p>
+        @endif
 
                 @foreach ($completedTasks as $task)
                     @include('tasks._task-card', ['task' => $task, 'categories' => $categories])
@@ -330,64 +355,16 @@
             </div>
         </div>
 
+            @foreach($completedTasks as $task)
+                @include('tasks._task-card', ['task' => $task, 'categories' => $categories])
+            @endforeach
+
+        </div>
+
     </div>
 
-    <script>
-        let debounceTimer;
+    <a href="/tasks/create" class="add-btn">+ Add New Task</a>
 
-        const searchInput  = document.getElementById('searchInput');
-        const clearBtn      = document.getElementById('clearBtn');
-        const searchForm    = document.getElementById('searchForm');
-        const filterType     = document.getElementById('filterType');
-        const filterValue    = document.getElementById('filterValue');
-
-        searchInput.addEventListener('input', function () {
-            clearBtn.style.display = this.value ? 'block' : 'none';
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => searchForm.submit(), 500);
-        });
-
-        function clearSearch() {
-            searchInput.value = '';
-            clearBtn.style.display = 'none';
-            searchForm.submit();
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            if (searchInput.value) clearBtn.style.display = 'block';
-        });
-
-        const categories = @json($categories);
-        const priorities = [
-            { id: 'low',    name: 'Low' },
-            { id: 'medium', name: 'Medium' },
-            { id: 'high',   name: 'High' },
-        ];
-
-        const savedFilterValue = "{{ request('filter_value') }}";
-
-        function populateFilterValue() {
-            filterValue.innerHTML = '';
-
-            const allOption = document.createElement('option');
-            allOption.value = '';
-            allOption.text = filterType.value === 'category' ? '-- All Categories --' : '-- All Priorities --';
-            filterValue.appendChild(allOption);
-
-            const items = filterType.value === 'category' ? categories : priorities;
-
-            items.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item.id;
-                option.text = item.name;
-                if (String(item.id) === savedFilterValue) option.selected = true;
-                filterValue.appendChild(option);
-            });
-        }
-
-        populateFilterValue();
-
-        filterType.addEventListener('change', populateFilterValue);
-        filterValue.addEventListener('change', () => searchForm.submit());
-    </script>
-</x-app-layout>
+</body>
+</html>
+@endsection

@@ -25,6 +25,9 @@ Route::get('/dashboard', function () {
     })->count();
 
     $highPriorityTasks = $pendingTasks->where('priority', 'high');
+    $todaysTasks = auth()->user()->tasks()
+        ->whereDate('date', now()->toDateString())
+        ->get();
 
     $topTags = \App\Models\Tag::withCount(['tasks' => function ($query) {
         $query->where('user_id', \Illuminate\Support\Facades\Auth::id());
@@ -47,7 +50,9 @@ Route::get('/dashboard', function () {
         'highPriorityTasks',
         'topTags'
     ));
+    return view('dashboard', compact('todaysTasks'));
 })->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
