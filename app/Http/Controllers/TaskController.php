@@ -56,7 +56,7 @@ class TaskController extends Controller
 
     public function index(Request $request)
     {
-        $query = Auth::user()->tasks()->with('tags');
+        $query = Auth::user()->tasks()->with(['tags', 'category']);
 
         if ($request->filled('search')) {
             $search = trim($request->search);
@@ -218,7 +218,6 @@ class TaskController extends Controller
             return Tag::firstOrCreate(['name' => strtolower($name)])->id;
         });
 
-        $task->tags()->sync($tagIds);
-    }
+        $task->tags()->sync($tagIds);    }
 
 }

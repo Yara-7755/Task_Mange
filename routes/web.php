@@ -11,23 +11,27 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
+
 Route::get('/dashboard', function () {
     $allTasks = \Illuminate\Support\Facades\Auth::user()->tasks;
 
     $pendingTasks = $allTasks->where('completed', false)->filter(function ($task) {
         return !$task->date || !\Carbon\Carbon::parse($task->date)->isPast();
     });
+
     $expiredTasks = $allTasks->where('completed', false)->filter(function ($task) {
         return $task->date && \Carbon\Carbon::parse($task->date)->isPast();
     });
+
     $completedTodayCount = $allTasks->where('completed', true)->filter(function ($task) {
         return $task->completed_at && \Carbon\Carbon::parse($task->completed_at)->isToday();
     })->count();
 
     $highPriorityTasks = $pendingTasks->where('priority', 'high');
-    $todaysTasks = auth()->user()->tasks()
-        ->whereDate('date', now()->toDateString())
-        ->get();
+
+    $todaysTasks = $pendingTasks->filter(function ($task) {
+        return $task->date && \Carbon\Carbon::parse($task->date)->isToday();
+    });
 
     $topTags = \App\Models\Tag::withCount(['tasks' => function ($query) {
         $query->where('user_id', \Illuminate\Support\Facades\Auth::id());
@@ -48,11 +52,10 @@ Route::get('/dashboard', function () {
         'expiredCount',
         'completedTodayCount',
         'highPriorityTasks',
-        'topTags'
+        'topTags',
+        'todaysTasks'
     ));
-    return view('dashboard', compact('todaysTasks'));
 })->middleware(['auth', 'verified'])->name('dashboard');
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

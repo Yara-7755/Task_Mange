@@ -2,3 +2,65 @@
 @tailwind components;
 @tailwind utilities;
 [x-cloak] { display: none !important; }
+[x-cloak] { display: none !important; }
+
+/* Progress Bar */
+.progress-section {
+    margin-bottom: 25px;
+    background: #f8fafc;
+    padding: 18px;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+}
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    color: #334155;
+    font-size: 14px;
+}
+.progress-bar-bg {
+    height: 10px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.progress-bar-fill {
+    height: 100%;
+    background: #164e2e;
+    transition: width 0.4s ease;
+}
+
+/* Search Input Extra Wrapper */
+.search-wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+.search-wrapper input {
+    width: 100%;
+}
+.clear-btn {
+    position: absolute;
+    right: 12px;
+    color: #94a3b8;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Clear Buttons inside overlays */
+.danger-action-btn {
+    width: 100%;
+    padding: 12px;
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.danger-action-btn:hover {
+    background: #b91c1c;
+}

@@ -1,49 +1,4 @@
 <div class="task-card">
-
-    <div class="task-header">
-        <h3>{{ $task->name }}</h3>
-
-        @if($task->priority == 'high')
-            <span class="priority high">High</span>
-        @elseif($task->priority == 'medium')
-            <span class="priority medium">Medium</span>
-        @else
-            <span class="priority low">Low</span>
-        @endif
-    </div>
-
-
-    <p class="description">
-        {{ $task->description }}
-    </p>
-
-
-    <div class="task-info">
-        <span>📅 {{ $task->date }}</span>
-        <span>📁 {{ $task->category->name ?? 'No Category' }}</span>
-    </div>
-
-
-    <div class="actions">
-
-
-        <form action="/tasks/{{ $task->id }}/toggle" method="POST">
-            @csrf
-            @method('PATCH')
-            <button type="submit" class="complete-btn">
-                @if($task->completed)
-                    Undo
-                @else
-                    Complete
-                @endif
-            </button>
-        </form>
-
-
-        <!-- Edit Button -->
-        <a href="/tasks/{{ $task->id }}/edit" class="edit-btn">
-            Edit
-        </a>
     <!-- Update Form -->
     @php
         $repeatValue = null;
@@ -64,19 +19,24 @@
         @method('PUT')
         <label>Task Name</label>
         <input type="text" name="name" value="{{ $task->name }}">
+
         <label>Description</label>
         <textarea name="description">{{ $task->description }}</textarea>
-        @if ($task->tags->count())
+
+        <!-- Dynamic Tags Display -->
+        @if ($task->tags && $task->tags->count())
             <div style="margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap;">
                 @foreach ($task->tags as $tag)
                     <span style="background: #e0f2e9; color: #166534; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: bold;">
-                #{{ $tag->name }}
-            </span>
+                        #{{ $tag->name }}
+                    </span>
                 @endforeach
             </div>
         @endif
+
         <label>Date</label>
         <input type="date" name="date" value="{{ $task->date }}">
+
         <label>Category</label>
         <select name="category_id">
             @foreach($categories as $category)
@@ -86,7 +46,6 @@
             @endforeach
         </select>
 
-
         <label>Repeat</label>
         <select name="repeat_type" id="repeat_type_{{ $task->id }}" onchange="toggleCustomHours_{{ $task->id }}()">
             <option value="none" {{ $task->repeat_type == 'none' ? 'selected' : '' }}>Does not repeat</option>
@@ -95,7 +54,7 @@
             <option value="custom" {{ $task->repeat_type == 'custom' ? 'selected' : '' }}>Custom (hours)</option>
         </select>
 
-        <div id="customHoursDiv_{{ $task->id ?? '' }}" style="{{ ($task->repeat_type ?? request('repeat_type')) == 'custom' ? 'display:block;' : 'display:none;' }} margin-top: 10px; padding: 12px; background: #f0fdf4; border-radius: 10px; border: 1px solid #86efac;">
+        <div id="customHoursDiv_{{ $task->id }}" style="{{ ($task->repeat_type ?? request('repeat_type')) == 'custom' ? 'display:block;' : 'display:none;' }} margin-top: 10px; padding: 12px; background: #f0fdf4; border-radius: 10px; border: 1px solid #86efac;">
             <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #166534;">
                 🔁 Repeat every
                 <input
@@ -120,11 +79,8 @@
             }
         </script>
 
-
-
         <br>
-        <div style="border-left: 6px solid
-    {{ $task->priority == 'high' ? '#dc2626' : ($task->priority == 'medium' ? '#f59e0b' : '#22c55e') }}; padding-left: 12px; margin: 15px 0;">
+        <div style="border-left: 6px solid {{ $task->priority == 'high' ? '#dc2626' : ($task->priority == 'medium' ? '#f59e0b' : '#22c55e') }}; padding-left: 12px; margin: 15px 0;">
             <label>Priority</label>
             <select name="priority">
                 <option value="low" {{ $task->priority == 'low' ? 'selected' : '' }}>Low</option>
@@ -149,22 +105,15 @@
             <label for="completed_{{ $task->id }}">Completed</label>
         </form>
     </div>
-    <!-- Actions row: Update button (linked to the form above via form="") + Delete form, side by side -->
+
+    <!-- Actions row -->
     <div class="actions">
         <button type="submit" form="update-form-{{ $task->id }}" class="update-btn">Update Task</button>
 
-
-        <!-- Delete Button -->
         <form action="/tasks/{{ $task->id }}" method="POST">
             @csrf
             @method('DELETE')
-
-            <button type="submit" class="delete-btn">
-                Delete
-            </button>
+            <button type="submit" class="delete-btn">Delete</button>
         </form>
-
     </div>
-
-</div>
 </div>
