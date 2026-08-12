@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ProfileController;
-use App\Models\Task;
 use Carbon\Carbon;
 
 Route::get('/', function () {
@@ -12,30 +11,54 @@ Route::get('/', function () {
 });
 
 
+/*
+|--------------------------------------------------------------------------
+| Dashboard
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/dashboard', function () {
-    $allTasks = \Illuminate\Support\Facades\Auth::user()->tasks;
 
-    $pendingTasks = $allTasks->where('completed', false)->filter(function ($task) {
-        return !$task->date || !\Carbon\Carbon::parse($task->date)->isPast();
-    });
+    $allTasks = Auth::user()->tasks;
 
-    $expiredTasks = $allTasks->where('completed', false)->filter(function ($task) {
-        return $task->date && \Carbon\Carbon::parse($task->date)->isPast();
-    });
+    // Pending tasks
+    $pendingTasks = $allTasks
+        ->where('completed', false)
+        ->filter(function ($task) {
+            return !$task->date || !Carbon::parse($task->date)->isPast();
+        });
 
-    $completedTodayCount = $allTasks->where('completed', true)->filter(function ($task) {
-        return $task->completed_at && \Carbon\Carbon::parse($task->completed_at)->isToday();
-    })->count();
+    // Expired tasks
+    $expiredTasks = $allTasks
+        ->where('completed', false)
+        ->filter(function ($task) {
+            return $task->date && Carbon::parse($task->date)->isPast();
+        });
 
+    // Completed today
+    $completedTodayCount = $allTasks
+        ->where('completed', true)
+        ->filter(function ($task) {
+            return $task->completed_at &&
+                Carbon::parse($task->completed_at)->isToday();
+        })
+        ->count();
+
+    // High priority tasks
     $highPriorityTasks = $pendingTasks->where('priority', 'high');
 
+    // Today's tasks
     $todaysTasks = $pendingTasks->filter(function ($task) {
-        return $task->date && \Carbon\Carbon::parse($task->date)->isToday();
+        return $task->date &&
+            Carbon::parse($task->date)->isToday();
     });
 
-    $topTags = \App\Models\Tag::withCount(['tasks' => function ($query) {
-        $query->where('user_id', \Illuminate\Support\Facades\Auth::id());
-    }])
+    // Top tags
+    $topTags = \App\Models\Tag::withCount([
+        'tasks' => function ($query) {
+            $query->where('user_id', Auth::id());
+        }
+    ])
         ->get()
         ->filter(function ($tag) {
             return $tag->tasks_count > 0;
@@ -55,26 +78,101 @@ Route::get('/dashboard', function () {
         'topTags',
         'todaysTasks'
     ));
+
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::post('/tasks/{task}/add-time', [TaskController::class, 'addTime']);
-});
+
+/*
+|--------------------------------------------------------------------------
+| Authenticated Routes
+|--------------------------------------------------------------------------
+*/
 
 Route::middleware('auth')->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Profile
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/profile', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
+
+    Route::patch('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+
+    Route::delete('/profile', [ProfileController::class, 'destroy'])
+        ->name('profile.destroy');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Focus Timer
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/tasks/timer', function () {
+
+        $pendingTasks = Auth::user()->tasks
+            ->where('completed', false)
+            ->filter(function ($task) {
+                return !$task->date ||
+                    !Carbon::parse($task->date)->isPast();
+            });
+
+        return view('tasks.timer', compact('pendingTasks'));
+
+    })->name('tasks.timer');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Task Time
+    |--------------------------------------------------------------------------
+    */
+
+    Route::post('/tasks/{task}/add-time', [TaskController::class, 'addTime']);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Tasks
+    |--------------------------------------------------------------------------
+    */
+
     Route::get('/tasks/create', [TaskController::class, 'create']);
+
     Route::post('/tasks', [TaskController::class, 'store']);
+
     Route::get('/tasks', [TaskController::class, 'index']);
+
     Route::patch('/tasks/{task}/toggle', [TaskController::class, 'toggleComplete']);
+
     Route::delete('/tasks/clear-expired', [TaskController::class, 'clearExpired']);
+
 });
+
+
+/*
+|--------------------------------------------------------------------------
+| Task Owner Routes
+|--------------------------------------------------------------------------
+*/
 
 Route::middleware(['auth', 'check.task.owner'])->group(function () {
+
     Route::put('/tasks/{task}', [TaskController::class, 'update']);
+
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
+
 });
+
+
+/*
+|--------------------------------------------------------------------------
+| Authentication
+|--------------------------------------------------------------------------
+*/
 
 require __DIR__.'/auth.php';

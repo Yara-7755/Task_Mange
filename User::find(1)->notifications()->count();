@@ -1,0 +1,37 @@
+[90m= [39m[34;4mIlluminate\Database\Eloquent\Collection[39;24m {#7561
+    [34mall[39m: [
+      [34;4mApp\Models\User[39;24m {#7558
+        [34mid[39m: [35m1[39m,
+        [34mname[39m: [32m"[39m[32mTasneem[39m[32m"[39m,
+        [34memail[39m: [32m"[39m[32mtasneemz@gmail.com[39m[32m"[39m,
+        [34memail_verified_at[39m: [36mnull[39m,
+        #[33mpassword[39m: [32m"[39m\$[32m2y[39m\$[32m12[39m\$[32mu7s4mU7E03dh.BDVFQGVweIz2GdCr7v0TBrKdYHdm1vQe2drqkeR2[39m[32m"[39m,
+        #[33mremember_token[39m: [36mnull[39m,
+        [34mcreated_at[39m: [32m"[39m[32m2026-08-08 11:46:54[39m[32m"[39m,
+        [34mupdated_at[39m: [32m"[39m[32m2026-08-08 11:46:54[39m[32m"[39m,
+        [34mnotifications_count[39m: [35m0[39m,
+      },
+      [34;4mApp\Models\User[39;24m {#7560
+        [34mid[39m: [35m2[39m,
+        [34mname[39m: [32m"[39m[32mtasneem zayed[39m[32m"[39m,
+        [34memail[39m: [32m"[39m[32mtasneem@gmail.com[39m[32m"[39m,
+        [34memail_verified_at[39m: [36mnull[39m,
+        #[33mpassword[39m: [32m"[39m\$[32m2y[39m\$[32m12[39m\$[32md/xXJN0S8J6aVhIHSkrfZ.fJ906RJ8olvT.wLCPwDlk557ZbPPt2C[39m[32m"[39m,
+        #[33mremember_token[39m: [36mnull[39m,
+        [34mcreated_at[39m: [32m"[39m[32m2026-08-11 09:01:14[39m[32m"[39m,
+        [34mupdated_at[39m: [32m"[39m[32m2026-08-11 09:01:14[39m[32m"[39m,
+        [34mnotifications_count[39m: [35m0[39m,
+      },
+      [34;4mApp\Models\User[39;24m {#8310
+        [34mid[39m: [35m3[39m,
+        [34mname[39m: [32m"[39m[32mMr. Ole Donnelly III[39m[32m"[39m,
+        [34memail[39m: [32m"[39m[32mtest@example.com[39m[32m"[39m,
+        [34memail_verified_at[39m: [32m"[39m[32m2026-08-11 12:11:31[39m[32m"[39m,
+        #[33mpassword[39m: [32m"[39m\$[32m2y[39m\$[32m12[39m\$[32mYgsIaVDobeiBrkp7vl/5dujefRrj7nYAJW5w7aR/p0LCvKiZy42RK[39m[32m"[39m,
+        #[33mremember_token[39m: [32m"[39m[32mWXjRlMrMnB[39m[32m"[39m,
+        [34mcreated_at[39m: [32m"[39m[32m2026-08-11 12:11:31[39m[32m"[39m,
+        [34mupdated_at[39m: [32m"[39m[32m2026-08-11 12:11:31[39m[32m"[39m,
+        [34mnotifications_count[39m: [35m0[39m,
+      },
+    ],
+  }

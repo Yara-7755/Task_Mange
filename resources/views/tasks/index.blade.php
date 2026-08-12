@@ -3,11 +3,10 @@
 @section('title', 'My Tasks - Task Manager')
 
 @section('styles')
-
     .tag-chip {
     display: inline-block;
-    background: var(--color-accent-soft);
-    color: var(--color-primary-dark);
+    background: var(--color-accent-soft, #e2e8f0);
+    color: var(--color-primary-dark, #1e293b);
     padding: 3px 12px;
     border-radius: 999px;
     font-size: 12px;
@@ -30,7 +29,7 @@
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: var(--color-ink-soft);
+    color: var(--color-ink-soft, #64748b);
     font-size: 18px;
     cursor: pointer;
     display: none;
@@ -48,7 +47,7 @@
     }
 
     .search-form button {
-    background: linear-gradient(135deg, var(--color-navy) 0%, var(--color-navy-dark) 100%);
+    background: linear-gradient(135deg, var(--color-navy, #1e293b) 0%, var(--color-navy-dark, #0f172a) 100%);
     white-space: nowrap;
     }
 
@@ -62,6 +61,86 @@
     }
     }
 
+    /* =====================================================
+    TASK PROGRESS
+    ===================================================== */
+    .task-progress-card {
+    margin: 0 auto 32px;
+    padding: 24px 28px;
+    background: #ffffff;
+    border: 1px solid var(--color-border-soft, #e2e8f0);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(36, 59, 83, 0.05);
+    }
+
+    .task-progress-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 14px;
+    }
+
+    .task-progress-title {
+    margin: 0;
+    color: var(--color-navy, #1e293b);
+    font-size: 18px;
+    font-weight: 700;
+    }
+
+    .task-progress-subtitle {
+    margin: 4px 0 0;
+    color: var(--color-ink-soft, #64748b);
+    font-size: 13px;
+    }
+
+    .task-progress-percent {
+    color: var(--color-navy, #1e293b);
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1;
+    }
+
+    /* Progress background */
+    .progress-bar-container {
+    position: relative;
+    width: 100%;
+    height: 12px;
+    overflow: hidden;
+    background: var(--color-surface-sunken, #f1f5f9);
+    border: 1px solid var(--color-border-soft, #e2e8f0);
+    border-radius: 999px;
+    }
+
+    /* Progress fill */
+    .progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #1e293b 0%, #334155 100%);
+    border-radius: inherit;
+    transition: width 0.8s ease-in-out;
+    }
+
+    .task-progress-bottom {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    color: var(--color-ink-soft, #64748b);
+    font-size: 13px;
+    }
+
+    .task-progress-bottom strong {
+    color: var(--color-navy, #1e293b);
+    }
+
+    @media (max-width: 720px) {
+    .task-progress-card {
+    padding: 18px 16px;
+    }
+
+    .task-progress-percent {
+    font-size: 20px;
+    }
+    }
 @endsection
 
 @section('content')
@@ -78,8 +157,35 @@
         <div class="success">{{ session('success') }}</div>
     @endif
 
-    <form action="/tasks" method="GET" class="search-form" id="searchForm">
+    @php
+        $totalTasks = $pendingTasks->count() + $expiredTasks->count() + $completedTasks->count();
+        $completedCount = $completedTasks->count();
+        $progressPercentage = $totalTasks > 0 ? round(($completedCount / $totalTasks) * 100) : 0;
+    @endphp
 
+        <!-- Task Progress Bar Card -->
+    <div class="task-progress-card">
+        <div class="task-progress-top">
+            <div>
+                <h2 class="task-progress-title">Your Progress</h2>
+                <p class="task-progress-subtitle">Keep going — you're making progress!</p>
+            </div>
+            <div class="task-progress-percent">
+                {{ $progressPercentage }}%
+            </div>
+        </div>
+
+        <div class="progress-bar-container" role="progressbar" aria-valuenow="{{ $progressPercentage }}" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar-fill" style="width: {{ $progressPercentage }}%;"></div>
+        </div>
+
+        <div class="task-progress-bottom">
+            <span><strong>{{ $completedCount }}</strong> completed</span>
+            <span><strong>{{ $totalTasks }}</strong> total tasks</span>
+        </div>
+    </div>
+
+    <form action="/tasks" method="GET" class="search-form" id="searchForm">
         <div class="search-wrapper">
             <input
                 type="text"
@@ -103,7 +209,6 @@
     </form>
 
     <div class="tasks-grid">
-
         <!-- Pending -->
         <div class="task-section pending-section">
             <h2><span class="section-badge badge-pending">⏳</span> Pending Tasks</h2>
@@ -158,7 +263,6 @@
                 @include('tasks._task-card', ['task' => $task, 'categories' => $categories])
             @endforeach
         </div>
-
     </div>
 
     <a href="/tasks/create" class="add-btn">+ Add New Task</a>
@@ -167,7 +271,7 @@
         let debounceTimer;
 
         const searchInput  = document.getElementById('searchInput');
-        const clearBtn     = document.getElementById('clearBtn');
+        const clearBtn      = document.getElementById('clearBtn');
         const searchForm   = document.getElementById('searchForm');
         const filterType   = document.getElementById('filterType');
         const filterValue  = document.getElementById('filterValue');
@@ -221,5 +325,4 @@
         filterType.addEventListener('change', populateFilterValue);
         filterValue.addEventListener('change', () => searchForm.submit());
     </script>
-
 @endsection

@@ -36,37 +36,16 @@
                     Notifications: {{ Auth::user()->unreadNotifications->count() }}
                 </div>
                 <h1 style="color:red">TEST</h1>
-                <!-- Notifications Bell -->
+                <!-- Notifications Bell التجريبي -->
                 <div class="relative me-4" x-data="{ notifOpen: false }">
-                    <button @click="notifOpen = !notifOpen" @click.away="notifOpen = false"
-                            class="relative inline-flex items-center p-2 text-gray-500 hover:text-gray-700 focus:outline-none">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                        </svg>
-
-                        @if(Auth::user()->unreadNotifications->count() > 0)
-                            <span class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
-                                {{ Auth::user()->unreadNotifications->count() }}
-                            </span>
-                        @endif
+                    <button @click="notifOpen = !notifOpen" type="button" class="p-2 text-red-600 bg-gray-100 rounded">
+                        اضغط هنا للجرس
                     </button>
 
-                    <div x-show="notifOpen" x-cloak
-                         class="absolute right-0 z-50 mt-2 w-80 bg-white rounded-md shadow-lg border border-gray-200">
-                        <div class="py-2 max-h-96 overflow-y-auto">
-                            @forelse(Auth::user()->unreadNotifications->take(10) as $notification)
-                                <div class="px-4 py-3 border-b border-gray-100 {{ $notification->read_at ? 'bg-white' : 'bg-green-50' }}">
-                                    <p class="text-sm text-gray-700">{{ $notification->data['message'] ?? '' }}</p>
-                                    <p class="text-xs text-gray-400 mt-1">{{ $notification->created_at->diffForHumans() }}</p>
-                                </div>
-                            @empty
-                                <div class="px-4 py-3 text-sm text-gray-500 text-center">
-                                    ما في إشعارات حالياً
-                                </div>
-                            @endforelse
-                        </div>
+                    <div x-show="notifOpen" class="absolute right-0 mt-2 w-48 bg-black text-white p-4 z-50">
+                        قائمة الإشعارات ظهرت بنجاح!
                     </div>
+                </div>
                 </div>
 
                 <x-dropdown align="right" width="48">

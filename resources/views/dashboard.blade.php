@@ -2,63 +2,44 @@
 
 @section('title', 'Dashboard - Task Manager')
 
+
 @section('styles')
 
-    /* أنماط إضافية خاصة بالداشبورد فقط، الباقي مأخوذ جاهز من layouts/app.blade.php */
-
-    .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-bottom: 32px;
+    .dashboard-page {
+    max-width: 1200px;
+    margin: 0 auto;
     }
 
-    @media (max-width: 720px) {
-    .stats-grid {
-    grid-template-columns: 1fr;
-    }
-    }
 
-    .stat-card {
-    background: var(--color-surface-alt);
-    border: 1px solid var(--color-border-soft);
-    border-radius: var(--radius-md);
-    padding: 24px;
-    text-align: center;
-    box-shadow: var(--shadow-soft);
+    /* =========================
+    Today's Tasks
+    ========================= */
+
+    .today-section {
+    margin-bottom: 24px;
     }
 
-    .stat-card .stat-number {
-    font-family: var(--font-display);
-    font-size: 34px;
-    font-weight: 700;
+    .today-section h2 {
+    margin-bottom: 20px;
     }
 
-    .stat-card .stat-label {
-    color: var(--color-ink-muted);
-    margin-top: 6px;
-    font-size: 14px;
-    }
 
-    .stat-pending .stat-number { color: var(--color-primary); }
-    .stat-expired .stat-number { color: var(--color-danger); }
-    .stat-completed .stat-number { color: var(--color-accent); }
-
-    .badge-priority { background: var(--color-warning-soft); color: var(--color-warning); }
-    .badge-tags { background: var(--color-accent-soft); color: var(--color-primary-dark); }
-
-    .task-section.pending-border { border-top: 3px solid var(--color-accent); }
-    .task-section.priority-border { border-top: 3px solid var(--color-warning); }
-    .task-section.tags-border { border-top: 3px solid var(--color-primary); }
+    /* =========================
+    Task Rows
+    ========================= */
 
     .task-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     padding: 14px 16px;
+
     background: var(--color-surface-sunken);
     border: 1px solid var(--color-border-soft);
+
     border-radius: var(--radius-sm);
+
     margin-bottom: 12px;
     }
 
@@ -77,34 +58,92 @@
     font-family: var(--font-mono);
     }
 
+
+    /* =========================
+    Two Columns
+    ========================= */
+
+    .dashboard-two-column {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+
+    margin-bottom: 24px;
+    }
+
+    .dashboard-two-column .task-section {
+    margin-bottom: 0;
+    }
+
+
+    /* =========================
+    Priority
+    ========================= */
+
     .priority-pill {
     padding: 4px 12px;
+
     border-radius: 999px;
+
     color: #fff;
+
     font-size: 11px;
     font-weight: 700;
+
     text-transform: uppercase;
     letter-spacing: 0.04em;
     }
 
-    .priority-pill.high { background: var(--color-danger); }
+    .priority-pill.high {
+    background: var(--color-danger);
+    }
+
+    .badge-priority {
+    background: var(--color-warning-soft);
+    color: var(--color-warning);
+    }
+
+    .task-section.priority-border {
+    border-top: 3px solid var(--color-warning);
+    }
+
+
+    /* =========================
+    Tags
+    ========================= */
+
+    .badge-tags {
+    background: var(--color-accent-soft);
+    color: var(--color-primary-dark);
+    }
+
+    .task-section.tags-border {
+    border-top: 3px solid var(--color-primary);
+    }
 
     .tags-wrap {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
     }
 
     .tag-chip {
     text-decoration: none;
+
     background: var(--color-accent-soft);
     color: var(--color-primary-dark);
+
     padding: 8px 16px;
+
     border-radius: 999px;
+
     font-weight: 600;
     font-size: 13.5px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
     }
 
     .tag-chip:hover {
@@ -112,251 +151,399 @@
     box-shadow: var(--shadow-card-hover);
     }
 
-    .timer-panel {
-    max-width: 420px;
-    margin: 0 auto;
+
+    /* =========================
+    Today's Tasks Border
+    ========================= */
+
+    .task-section.pending-border {
+    border-top: 3px solid var(--color-accent);
+    }
+
+
+    /* =========================
+    Quick Stats
+    ========================= */
+
+    .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 20px;
+
+    margin-bottom: 24px;
+    }
+
+    .stat-card {
+    background: var(--color-surface-alt);
+
+    border: 1px solid var(--color-border-soft);
+
+    border-radius: var(--radius-md);
+
+    padding: 20px;
+
     text-align: center;
+
+    box-shadow: var(--shadow-soft);
     }
 
-    .timer-panel select {
-    margin-bottom: 30px;
+    .stat-card .stat-number {
+    font-family: var(--font-display);
+
+    font-size: 32px;
+    font-weight: 700;
     }
 
-    #timerDisplay {
-    font-family: var(--font-mono);
+    .stat-card .stat-label {
+    color: var(--color-ink-muted);
+
+    margin-top: 6px;
+
+    font-size: 14px;
     }
 
-    .timer-buttons {
+    .stat-pending .stat-number {
+    color: var(--color-primary);
+    }
+
+    .stat-expired .stat-number {
+    color: var(--color-danger);
+    }
+
+    .stat-completed .stat-number {
+    color: var(--color-accent);
+    }
+
+
+    /* =========================
+    Focus Timer Button
+    ========================= */
+
+    .focus-timer-btn {
     display: flex;
-    gap: 12px;
+
+    align-items: center;
     justify-content: center;
+
+    width: 100%;
+
+    padding: 18px 24px;
+
+    margin: 0 0 24px;
+
+    background: var(--color-surface-alt);
+
+    border: 1px solid var(--color-border-soft);
+
+    border-radius: var(--radius-md);
+
+    color: var(--color-ink);
+
+    text-decoration: none;
+
+    font-family: var(--font-display);
+
+    font-size: 18px;
+    font-weight: 700;
+
+    box-shadow: var(--shadow-soft);
+
+    transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
     }
 
-    .timer-buttons button {
-    padding: 14px 28px;
+    .focus-timer-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow: var(--shadow-card-hover);
+
+    background: var(--color-surface);
     }
 
-    #startBtn { background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark)); }
-    #pauseBtn { background: var(--color-warning); }
-    #resetBtn { background: var(--color-danger); }
+
+    /* =========================
+    Responsive
+    ========================= */
+
+    @media (max-width: 720px) {
+
+    .dashboard-two-column {
+    grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+    grid-template-columns: 1fr;
+    }
+
+    .task-row {
+    gap: 10px;
+    align-items: flex-start;
+    }
+
+    }
 
 @endsection
 
+
 @section('content')
 
-    <!-- Hero -->
-    <div class="hero-panel">
-        <div class="page-header">
-            <div class="icon-box">🏠</div>
-        </div>
-        <h1>Dashboard</h1>
-        <p class="subtitle">Here's what's on your plate today</p>
-    </div>
+    <div class="dashboard-page">
 
-    <!-- 1. Quick Stats -->
-    <div class="stats-grid">
-        <div class="stat-card stat-pending">
-            <div class="stat-number">{{ $pendingCount }}</div>
-            <div class="stat-label">⏳ Pending Tasks</div>
-        </div>
-        <div class="stat-card stat-expired">
-            <div class="stat-number">{{ $expiredCount }}</div>
-            <div class="stat-label">⚠️ Expired Tasks</div>
-        </div>
-        <div class="stat-card stat-completed">
-            <div class="stat-number">{{ $completedTodayCount }}</div>
-            <div class="stat-label">✅ Completed Today</div>
-        </div>
-    </div>
+        <!-- ==========================================
+             Hero
+             ========================================== -->
 
-    <!-- 2. Today's Tasks -->
-    <div class="task-section pending-border">
-        <h2><span class="section-badge badge-pending">📌</span> Today's Tasks</h2>
+        <div class="hero-panel">
 
-        @if ($todaysTasks->isEmpty())
-            <p class="empty-msg">No tasks due today.</p>
-        @endif
-
-        @foreach ($todaysTasks as $task)
-            <div class="task-row">
-                <span class="task-name">{{ $task->name }}</span>
-                @if ($task->category)
-                    <span class="task-date">{{ $task->category->name }}</span>
-                @endif
+            <div class="page-header">
+                <div class="icon-box">🏠</div>
             </div>
-        @endforeach
-    </div>
 
-    <!-- 3. High Priority Tasks -->
-    <div class="task-section priority-border">
-        <h2><span class="section-badge badge-priority">🔥</span> High Priority Tasks</h2>
+            <h1>Dashboard</h1>
 
-        @if ($highPriorityTasks->isEmpty())
-            <p class="empty-msg">No high priority tasks right now.</p>
-        @endif
+            <p class="subtitle">
+                Here's what's on your plate today
+            </p>
 
-        @foreach ($highPriorityTasks as $task)
-            <div class="task-row">
-                <span class="task-name">{{ $task->name }}</span>
-                <span style="display: flex; align-items: center; gap: 10px;">
-                    <span class="priority-pill high">High</span>
-                    @if ($task->date)
-                        <span class="task-date">{{ \Carbon\Carbon::parse($task->date)->format('M d') }}</span>
-                    @endif
-                </span>
-            </div>
-        @endforeach
-    </div>
+        </div>
 
-    <!-- 4. Top Tags -->
-    <div class="task-section tags-border">
-        <h2><span class="section-badge badge-tags">🏷️</span> Top Tags</h2>
 
-        @if ($topTags->isEmpty())
-            <p class="empty-msg">No tags used yet.</p>
-        @else
-            <div class="tags-wrap">
-                @foreach ($topTags as $tag)
-                    <a href="/tasks?search={{ $tag->name }}" class="tag-chip">
-                        #{{ $tag->name }} ({{ $tag->tasks_count }})
-                    </a>
+        <!-- ==========================================
+             1. Today's Tasks - Most Important
+             ========================================== -->
+
+        <div class="task-section today-section pending-border">
+
+            <h2>
+            <span class="section-badge badge-pending">
+                📌
+            </span>
+
+                Today's Tasks
+            </h2>
+
+
+            @if ($todaysTasks->isEmpty())
+
+                <p class="empty-msg">
+                    No tasks due today.
+                </p>
+
+            @else
+
+                @foreach ($todaysTasks as $task)
+
+                    <div class="task-row">
+
+                    <span class="task-name">
+                        {{ $task->name }}
+                    </span>
+
+
+                        @if ($task->category)
+
+                            <span class="task-date">
+                            {{ $task->category->name }}
+                        </span>
+
+                        @endif
+
+                    </div>
+
                 @endforeach
-            </div>
-        @endif
-    </div>
 
-    <!-- 5. Focus Timer -->
-    <div class="task-section">
-        <h2><span class="section-badge badge-completed">⏱️</span> Focus Timer</h2>
+            @endif
 
-        <div class="timer-panel">
-            <select id="taskSelect">
-                <option value="">-- Select a task --</option>
-                @foreach ($pendingTasks as $task)
-                    <option value="{{ $task->id }}">{{ $task->name }}</option>
-                @endforeach
-            </select>
+        </div>
 
-            <div style="position: relative; width: 260px; height: 260px; margin: 0 auto 30px;">
-                <svg width="260" height="260" style="transform: rotate(-90deg);">
-                    <circle cx="130" cy="130" r="112" fill="none" stroke="var(--color-border)" stroke-width="16" />
-                    <circle
-                        id="progressCircle"
-                        cx="130" cy="130" r="112"
-                        fill="none"
-                        stroke="var(--color-ink-soft)"
-                        stroke-width="16"
-                        stroke-linecap="round"
-                        stroke-dasharray="703.7"
-                        stroke-dashoffset="0"
-                        style="transition: stroke-dashoffset 1s linear, stroke 0.4s ease;"
-                    />
-                </svg>
 
-                <div id="timerDisplay" style="
-                    position: absolute;
-                    top: 50%; left: 50%;
-                    transform: translate(-50%, -50%);
-                    font-size: 44px;
-                    font-weight: bold;
-                    color: var(--color-primary-dark);
-                ">
-                    25:00
+        <!-- ==========================================
+             2. Quick Stats
+             ========================================== -->
+
+        <div class="stats-grid">
+
+            <div class="stat-card stat-pending">
+
+                <div class="stat-number">
+                    {{ $pendingCount }}
                 </div>
+
+                <div class="stat-label">
+                    ⏳ Pending Tasks
+                </div>
+
             </div>
 
-            <div class="timer-buttons">
-                <button id="startBtn" type="button">Start</button>
-                <button id="pauseBtn" type="button">Pause</button>
-                <button id="resetBtn" type="button">Reset</button>
+
+            <div class="stat-card stat-expired">
+
+                <div class="stat-number">
+                    {{ $expiredCount }}
+                </div>
+
+                <div class="stat-label">
+                    ⚠️ Expired Tasks
+                </div>
+
             </div>
+
+
+            <div class="stat-card stat-completed">
+
+                <div class="stat-number">
+                    {{ $completedTodayCount }}
+                </div>
+
+                <div class="stat-label">
+                    ✅ Completed Today
+                </div>
+
+            </div>
+
         </div>
+
+
+        <!-- ==========================================
+             3 + 4. High Priority + Top Tags
+             ========================================== -->
+
+        <div class="dashboard-two-column">
+
+
+            <!-- High Priority -->
+
+            <div class="task-section priority-border">
+
+                <h2>
+
+                <span class="section-badge badge-priority">
+                    🔥
+                </span>
+
+                    High Priority
+
+                </h2>
+
+
+                @if ($highPriorityTasks->isEmpty())
+
+                    <p class="empty-msg">
+                        No high priority tasks right now.
+                    </p>
+
+                @else
+
+                    @foreach ($highPriorityTasks as $task)
+
+                        <div class="task-row">
+
+                        <span class="task-name">
+                            {{ $task->name }}
+                        </span>
+
+
+                            <span style="
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                        ">
+
+                            <span class="priority-pill high">
+                                High
+                            </span>
+
+
+                            @if ($task->date)
+
+                                    <span class="task-date">
+                                    {{ \Carbon\Carbon::parse($task->date)->format('M d') }}
+                                </span>
+
+                                @endif
+
+                        </span>
+
+                        </div>
+
+                    @endforeach
+
+                @endif
+
+            </div>
+
+
+            <!-- Top Tags -->
+
+            <div class="task-section tags-border">
+
+                <h2>
+
+                <span class="section-badge badge-tags">
+                    🏷️
+                </span>
+
+                    Top Tags
+
+                </h2>
+
+
+                @if ($topTags->isEmpty())
+
+                    <p class="empty-msg">
+                        No tags used yet.
+                    </p>
+
+                @else
+
+                    <div class="tags-wrap">
+
+                        @foreach ($topTags as $tag)
+
+                            <a
+                                href="/tasks?search={{ urlencode($tag->name) }}"
+                                class="tag-chip"
+                            >
+
+                                #{{ $tag->name }}
+                                ({{ $tag->tasks_count }})
+
+                            </a>
+
+                        @endforeach
+
+                    </div>
+
+                @endif
+
+            </div>
+
+        </div>
+
+
+        <!-- ==========================================
+             5. Focus Timer
+             ========================================== -->
+
+        <a
+            href="{{ route('tasks.timer') }}"
+            class="focus-timer-btn"
+        >
+            ⬜ Focus Timer
+        </a>
+
+
+        <!-- ==========================================
+             View All Tasks
+             ========================================== -->
+
+        <a href="/tasks" class="add-btn">
+            View All Tasks
+        </a>
+
     </div>
-
-    <a href="/tasks" class="add-btn">View All Tasks</a>
-
-    <script>
-        let totalSeconds = 25 * 60;
-        let elapsedSeconds = 0;
-        let timerInterval = null;
-        let isRunning = false;
-
-        const display = document.getElementById('timerDisplay');
-        const progressCircle = document.getElementById('progressCircle');
-        const startBtn = document.getElementById('startBtn');
-        const pauseBtn = document.getElementById('pauseBtn');
-        const resetBtn = document.getElementById('resetBtn');
-        const taskSelect = document.getElementById('taskSelect');
-
-        const CIRCLE_LENGTH = 703.7;
-
-        function setCircleColor(color) {
-            progressCircle.style.stroke = color;
-        }
-
-        function updateDisplay() {
-            let remaining = totalSeconds - elapsedSeconds;
-            let minutes = Math.floor(remaining / 60);
-            let seconds = remaining % 60;
-            display.textContent =
-                String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
-
-            let progress = elapsedSeconds / totalSeconds;
-            let offset = CIRCLE_LENGTH * progress;
-            progressCircle.style.strokeDashoffset = offset;
-        }
-
-        startBtn.addEventListener('click', function () {
-            if (isRunning) return;
-            if (!taskSelect.value) {
-                alert('Please select a task first');
-                return;
-            }
-            isRunning = true;
-            setCircleColor('#1f5c37');
-
-            timerInterval = setInterval(function () {
-                elapsedSeconds++;
-                updateDisplay();
-
-                if (elapsedSeconds >= totalSeconds) {
-                    clearInterval(timerInterval);
-                    isRunning = false;
-                    saveTime();
-                    alert('Time is up! Great work 🎉');
-                }
-            }, 1000);
-        });
-
-        pauseBtn.addEventListener('click', function () {
-            clearInterval(timerInterval);
-            isRunning = false;
-            setCircleColor('#c08a2e');
-            saveTime();
-        });
-
-        resetBtn.addEventListener('click', function () {
-            clearInterval(timerInterval);
-            isRunning = false;
-            elapsedSeconds = 0;
-            setCircleColor('#93a099');
-            updateDisplay();
-        });
-
-        function saveTime() {
-            if (elapsedSeconds === 0 || !taskSelect.value) return;
-
-            fetch(`/tasks/${taskSelect.value}/add-time`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                },
-                body: JSON.stringify({ seconds: elapsedSeconds }),
-            });
-
-            elapsedSeconds = 0;
-        }
-    </script>
 
 @endsection

@@ -839,6 +839,69 @@
             }
         }
 
+        .search-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+
+        .search-form input[type="text"] {
+            flex: 2;
+            min-width: 200px;
+        }
+
+        .search-form select {
+            flex: 1;
+            min-width: 160px;
+        }
+
+        .search-form button {
+            background: linear-gradient(135deg, var(--color-navy) 0%, var(--color-navy-dark) 100%);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 13px 22px;
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: 14.5px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .search-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(28, 39, 57, 0.32);
+        }
+
+        .details-toggle-btn {
+            display: block;
+            width: 100%;
+            background: transparent;
+            border: 1.5px solid var(--color-navy);
+            color: var(--color-navy);
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: 13.5px;
+            cursor: pointer;
+            margin-top: 14px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+        }
+
+        .details-toggle-btn:hover {
+            background: var(--color-navy);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .task-details {
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px dashed var(--color-border);
+        }
+
         @yield('styles')
     </style>
     <script>
@@ -913,6 +976,7 @@
     </div>
 </nav>
 
+<!-- Main Content Container (سيظهر فقط إن وُجد محتوى ملموس) -->
 @if(trim($__env->yieldContent('content')))
     <div class="container">
         @yield('content')
