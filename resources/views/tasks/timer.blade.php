@@ -640,14 +640,16 @@
     <script>
 
         /*
-        |--------------------------------------------------------------------------
-        | Timer Variables
-        |--------------------------------------------------------------------------
-        */
+  |--------------------------------------------------------------------------
+  | Timer Variables
+  |--------------------------------------------------------------------------
+  */
 
         let totalSeconds = 25 * 60;
 
         let elapsedSeconds = 0;
+
+        let savedSeconds = 0;
 
         let timerInterval = null;
 
@@ -662,8 +664,10 @@
 
         const display =
             document.getElementById('timerDisplay');
+
         const timerLiquid =
             document.getElementById('timerLiquid');
+
         const progressCircle =
             document.getElementById('progressCircle');
 
@@ -680,20 +684,12 @@
             document.getElementById('taskSelect');
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Circle
-        |--------------------------------------------------------------------------
-        */
+
 
         const CIRCLE_LENGTH = 703.7;
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Change Circle Color
-        |--------------------------------------------------------------------------
-        */
+
 
         function setCircleColor(color) {
 
@@ -702,11 +698,7 @@
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Update Timer
-        |--------------------------------------------------------------------------
-        */
+
 
         function updateDisplay() {
 
@@ -734,14 +726,16 @@
             const offset =
                 CIRCLE_LENGTH * progress;
 
+
             progressCircle.style.strokeDashoffset =
                 offset;
 
 
-            /* Liquid animation */
+
 
             const remainingPercent =
                 ((totalSeconds - elapsedSeconds) / totalSeconds) * 100;
+
 
             timerLiquid.style.height =
                 remainingPercent + '%';
@@ -749,11 +743,7 @@
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Start
-        |--------------------------------------------------------------------------
-        */
+
 
         startBtn.addEventListener('click', function () {
 
@@ -770,6 +760,8 @@
             }
 
 
+
+
             isRunning = true;
 
 
@@ -780,8 +772,9 @@
 
                 elapsedSeconds++;
 
-
                 updateDisplay();
+
+
 
 
                 if (elapsedSeconds >= totalSeconds) {
@@ -807,11 +800,7 @@
         });
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Pause
-        |--------------------------------------------------------------------------
-        */
+
 
         pauseBtn.addEventListener('click', function () {
 
@@ -830,16 +819,14 @@
             setCircleColor('#c08a2e');
 
 
+
+
             saveTime();
 
         });
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Reset
-        |--------------------------------------------------------------------------
-        */
+
 
         resetBtn.addEventListener('click', function () {
 
@@ -851,6 +838,8 @@
 
             elapsedSeconds = 0;
 
+            savedSeconds = 0;
+
 
             setCircleColor('#93a099');
 
@@ -860,11 +849,7 @@
         });
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Save Time
-        |--------------------------------------------------------------------------
-        */
+
 
         function saveTime() {
 
@@ -872,6 +857,17 @@
                 elapsedSeconds === 0 ||
                 !taskSelect.value
             ) {
+                return;
+            }
+
+
+
+
+            const newSeconds =
+                elapsedSeconds - savedSeconds;
+
+
+            if (newSeconds <= 0) {
                 return;
             }
 
@@ -889,22 +885,19 @@
                     },
 
                     body: JSON.stringify({
-                        seconds: elapsedSeconds
+                        seconds: newSeconds
                     }),
                 }
             );
 
 
-            elapsedSeconds = 0;
+
+            savedSeconds = elapsedSeconds;
 
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Initial Display
-        |--------------------------------------------------------------------------
-        */
+
 
         updateDisplay();
 
