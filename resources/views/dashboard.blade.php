@@ -284,6 +284,46 @@
     }
 
     }
+    /* =========================
+    Action Buttons (Focus Timer & Create Group)
+    ========================= */
+
+    .action-buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 24px;
+    }
+
+    .action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 18px 24px;
+    background: var(--color-surface-alt);
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius-md);
+    color: var(--color-ink);
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card-hover);
+    background: var(--color-surface);
+    }
+
+    @media (max-width: 720px) {
+    .action-buttons-grid {
+    grid-template-columns: 1fr;
+    }
+    }
 
 @endsection
 
@@ -316,6 +356,7 @@
              ========================================== -->
 
         <div class="task-section today-section pending-border">
+
 
             <h2>
             <span class="section-badge badge-pending">
@@ -524,16 +565,22 @@
         </div>
 
 
-        <!-- ==========================================
-             5. Focus Timer
-             ========================================== -->
 
-        <a
-            href="{{ route('tasks.timer') }}"
-            class="focus-timer-btn"
-        >
-            ⬜ Focus Timer
-        </a>
+
+        <!-- ==========================================
+              5. Actions (Focus Timer + Create Group)
+              ========================================== -->
+
+        <div class="action-buttons-grid">
+            <a href="{{ route('tasks.timer') }}" class="action-btn">
+                ⬜ Focus Timer
+            </a>
+
+            <a href="{{ route('groups.create') }}" class="action-btn">
+                👥 Create Group
+            </a>
+        </div>
+
 
 
         <!-- ==========================================

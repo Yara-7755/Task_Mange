@@ -1,0 +1,41 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Group;
+use App\Services\GroupService;
+use Illuminate\Http\Request;
+
+class InvitationController extends Controller
+{
+    protected GroupService $groupService;
+
+    public function __construct(GroupService $groupService)
+    {
+        $this->groupService = $groupService;
+    }
+
+    public function sendInvitation(Request $request, Group $group)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        try {
+            $this->groupService->inviteMember($group, $request->email);
+            return back()->with('success', 'Invitation sent successfully!');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function acceptInvitation($token)
+    {
+        try {
+            $group = $this->groupService->acceptInvitation($token);
+            return redirect()->route('groups.show', $group->id)->with('success', 'You have joined the group!');
+        } catch (\Exception $e) {
+            return redirect()->route('groups.index')->with('error', $e->getMessage());
+        }
+    }
+}

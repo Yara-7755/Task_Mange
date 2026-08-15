@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ProfileController;
 use Carbon\Carbon;
+use App\Http\Controllers\GroupController;
+use App\Http\Controllers\InvitationController;
+
 
 Route::get('/', function () {
     return redirect('/login');
@@ -143,7 +146,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/tasks/create', [TaskController::class, 'create']);
 
-    Route::post('/tasks', [TaskController::class, 'store']);
+    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
 
     Route::get('/tasks', [TaskController::class, 'index']);
 
@@ -175,4 +178,19 @@ Route::middleware(['auth', 'check.task.owner'])->group(function () {
 |--------------------------------------------------------------------------
 */
 
+Route::middleware(['auth'])->group(function () {
+    // Group Routes
+    Route::get('/groups', [GroupController::class, 'index'])->name('groups.index');
+    Route::get('/groups/create', [GroupController::class, 'create'])->name('groups.create');
+    Route::post('/groups', [GroupController::class, 'store'])->name('groups.store');
+    Route::get('/groups/{group}', [GroupController::class, 'show'])->name('groups.show');
+    Route::delete('/groups/{group}/members/{user}', [GroupController::class, 'removeMember'])->name('groups.remove-member');
+});
+
+
+Route::middleware(['auth'])->group(function () {
+    // Invitation Routes
+    Route::post('/groups/{group}/invitations', [InvitationController::class, 'sendInvitation'])->name('invitations.send');
+    Route::get('/invitations/accept/{token}', [InvitationController::class, 'acceptInvitation'])->name('invitations.accept');
+});
 require __DIR__.'/auth.php';
