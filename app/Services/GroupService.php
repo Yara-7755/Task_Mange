@@ -52,6 +52,7 @@ class GroupService
     public function inviteMember(Group $group, string $email): GroupInvitation
     {
         $currentUserRole = $group->members()->where('user_id', Auth::id())->first()->pivot->role ?? null;
+
         if ($currentUserRole !== 'admin') {
             throw new \Exception('Only group admins can send invitations.');
         }
@@ -61,10 +62,11 @@ class GroupService
         }
 
         $invitation = GroupInvitation::updateOrCreate(
-            ['group_id' => $group->id, 'email' => $email],
+            ['group_id' => $group->id, 'invited_email' => $email],
             [
-                'token' => Str::random(32),
-                'status' => 'pending',
+                'invited_by' => Auth::id(),
+                'token'      => Str::random(32),
+                'status'     => 'pending',
             ]
         );
 
@@ -73,11 +75,19 @@ class GroupService
         return $invitation;
     }
 
+    public function getPendingInvitationsForUser(): mixed
+    {
+        return GroupInvitation::with(['group', 'inviter'])
+            ->where('invited_email', Auth::user()->email)
+            ->where('status', 'pending')
+            ->get();
+    }
+
     public function acceptInvitation(string $token)
     {
         $invitation = GroupInvitation::where('token', $token)->where('status', 'pending')->firstOrFail();
 
-        if (Auth::user()->email !== $invitation->email) {
+        if (Auth::user()->email !== $invitation->invited_email) {
             throw new \Exception('This invitation is for a different email address.');
         }
 
@@ -86,9 +96,23 @@ class GroupService
             'joined_at' => now(),
         ]);
 
-
         $invitation->update(['status' => 'accepted']);
 
         return $invitation->group;
     }
+    public function declineInvitation(string $token): GroupInvitation
+    {
+        $invitation = GroupInvitation::where('token', $token)
+            ->where('status', 'pending')
+            ->firstOrFail();
+
+        if (Auth::user()->email !== $invitation->invited_email) {
+            throw new \Exception('This invitation is for a different email address.');
+        }
+
+        $invitation->update(['status' => 'declined']);
+
+        return $invitation;
+    }
+
 }

@@ -164,6 +164,86 @@
     color: var(--color-ink-muted, #6b7280);
     }
 
+    /* =========================
+    Pending Invitations
+    ========================= */
+    .invitations-section {
+    margin-bottom: 32px;
+    }
+
+    .invitations-title {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-ink);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    }
+
+    .invitation-card {
+    background: #fffbea;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius-md, 12px);
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    }
+
+    .invitation-info strong {
+    font-family: var(--font-display);
+    font-size: 15px;
+    color: var(--color-ink);
+    display: block;
+    margin-bottom: 2px;
+    }
+
+    .invitation-info span {
+    font-size: 13px;
+    color: var(--color-ink-muted, #6b7280);
+    }
+
+    .invitation-actions {
+    display: flex;
+    gap: 8px;
+    }
+
+    .btn-accept, .btn-decline {
+    padding: 8px 16px;
+    border-radius: var(--radius-sm, 8px);
+    font-weight: 600;
+    font-size: 13px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.1s ease;
+    }
+
+    .btn-accept {
+    background: #1e3a2b;
+    color: #ffffff;
+    }
+
+    .btn-accept:hover {
+    background: #14281e;
+    transform: translateY(-1px);
+    }
+
+    .btn-decline {
+    background: transparent;
+    border: 1px solid #d1d5db;
+    color: var(--color-ink-muted, #6b7280);
+    }
+
+    .btn-decline:hover {
+    background: #f3f4f6;
+    }
+
     @media (max-width: 640px) {
     .groups-grid {
     grid-template-columns: 1fr;
@@ -190,6 +270,36 @@
         @if (session('success'))
             <div class="alert-success">
                 ✓ {{ session('success') }}
+            </div>
+        @endif
+
+        {{-- Pending Invitations Section --}}
+        @if (isset($pendingInvitations) && $pendingInvitations->count() > 0)
+            <div class="invitations-section">
+                <div class="invitations-title">
+                    📩 Pending Invitations ({{ $pendingInvitations->count() }})
+                </div>
+
+                @foreach ($pendingInvitations as $invitation)
+                    <div class="invitation-card">
+                        <div class="invitation-info">
+                            <strong>{{ $invitation->group->name }}</strong>
+                            <span>Invited by {{ $invitation->inviter->name }}</span>
+                        </div>
+
+                        <div class="invitation-actions">
+                            <form action="{{ route('invitations.accept', $invitation->token) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn-accept">Accept</button>
+                            </form>
+
+                            <form action="{{ route('invitations.decline', $invitation->token) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn-decline">Decline</button>
+                            </form>
+                        </div>
+                    </div>
+                @endforeach
             </div>
         @endif
 

@@ -191,6 +191,14 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     // Invitation Routes
     Route::post('/groups/{group}/invitations', [InvitationController::class, 'sendInvitation'])->name('invitations.send');
-    Route::get('/invitations/accept/{token}', [InvitationController::class, 'acceptInvitation'])->name('invitations.accept');
+    Route::post('/invitations/accept/{token}', [InvitationController::class, 'accept'])->name('invitations.accept');
+
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('/groups/{group}/invite', [InvitationController::class, 'send'])->name('invitations.send');
+    Route::get('/invitations/{token}', [InvitationController::class, 'show'])->name('invitations.show');
+    Route::post('/invitations/{token}/accept', [InvitationController::class, 'accept'])->name('invitations.accept');
+    Route::post('/invitations/{token}/decline', [InvitationController::class, 'decline'])->name('invitations.decline');
 });
 require __DIR__.'/auth.php';
