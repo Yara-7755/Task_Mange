@@ -19,6 +19,8 @@ class Task extends Model
         'repeat_type',
         'repeat_interval_minutes',
         'repeated',
+        'group_id',
+        'assigned_to',
     ];
     public function user(){
 
@@ -34,5 +36,20 @@ class Task extends Model
     {
         return $this->belongsToMany(Tag::class, 'task_tag');
     }
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function assignedUser()
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
+    }
+
 
 }

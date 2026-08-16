@@ -1,4 +1,6 @@
+
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -918,10 +920,12 @@
 <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode">🌙</button>
 
 <!-- Top Navigation Bar -->
+<!-- Top Navigation Bar -->
 <nav class="top-nav">
     <div class="nav-links">
         <a href="/dashboard">Dashboard</a>
         <a href="/tasks">My Tasks</a>
+        <a href="/groups">Groups</a>
     </div>
 
     <div class="nav-user">
@@ -935,8 +939,8 @@
                 🔔
                 @if(Auth::user()->unreadNotifications->count() > 0)
                     <span class="notification-count">
-                            {{ Auth::user()->unreadNotifications->count() }}
-                        </span>
+                        {{ Auth::user()->unreadNotifications->count() }}
+                    </span>
                 @endif
             </button>
 
@@ -963,8 +967,8 @@
 
         <!-- User Name -->
         <span class="user-name">
-                {{ Auth::user()->name ?? '' }}
-            </span>
+            {{ Auth::user()->name ?? '' }}
+        </span>
 
         <!-- Logout -->
         <form action="/logout" method="POST">
@@ -975,7 +979,6 @@
         </form>
     </div>
 </nav>
-
 <!-- Main Content Container (سيظهر فقط إن وُجد محتوى ملموس) -->
 @if(trim($__env->yieldContent('content')))
     <div class="container">

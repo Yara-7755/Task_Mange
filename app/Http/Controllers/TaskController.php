@@ -8,8 +8,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\Tag;
+use App\Models\Group;
+use App\Services\TaskService;
 class TaskController extends Controller
 {
+    protected TaskService $taskService;
+
+    public function __construct(TaskService $taskService)
+    {
+        $this->taskService = $taskService;
+    }
     public function create()
     {
         $categories = Category::all();
@@ -28,7 +36,15 @@ class TaskController extends Controller
             'repeat_type'           => 'nullable|in:none,daily,weekly,custom',
             'repeat_interval_value' => 'nullable|integer|min:1',
             'repeat_interval_unit'  => 'nullable|in:minutes,hours',
+            'group_id'    => 'nullable|exists:groups,id',
+            'assigned_to' => 'nullable|exists:users,id',
         ]);
+        try {
+            $this->taskService->createTask($validated);
+            return back()->with('success', 'Task created successfully!');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
 
         $repeatMinutes = null;
         if ($request->repeat_type === 'custom' && $request->repeat_interval_value) {
