@@ -27,5 +27,11 @@ class Group extends Model
     public function invitations()
     {
         return $this->hasMany(GroupInvitation::class);
+
+    }
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'user_id'); // أو 'owner_id' حسب اسم العمود في الداتا بيز
     }
 }

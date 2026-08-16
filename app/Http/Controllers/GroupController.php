@@ -18,7 +18,9 @@ class GroupController extends Controller
     public function index()
     {
         $groups = $this->groupService->getUserGroups();
-        return view('groups.index', compact('groups'));
+        $pendingInvitations = $this->groupService->getPendingInvitationsForUser();
+
+        return view('groups.index', compact('groups', 'pendingInvitations'));
     }
 
     public function create()
@@ -39,11 +41,11 @@ class GroupController extends Controller
 
     public function show(Group $group)
     {
-        if (!$group->members->contains(auth()->id())) {
+        if ($group->user_id !== auth()->id() && !$group->members->contains(auth()->id())) {
             abort(403, 'Unauthorized access.');
         }
+        $group->load(['owner', 'members', 'invitations', 'tasks']);
 
-        $group->load('members', 'invitations');
         return view('groups.show', compact('group'));
     }
 

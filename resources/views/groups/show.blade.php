@@ -167,20 +167,53 @@
     /* Members List */
     .members-list {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 10px;
     }
 
-    .member-chip {
-    display: inline-flex;
+    .member-item {
+    display: flex;
     align-items: center;
-    gap: 8px;
-    background: var(--color-surface-sunken, #f3f4f6);
-    padding: 6px 14px;
-    border-radius: 999px;
-    font-size: 13.5px;
-    font-weight: 500;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--color-surface-sunken, #f9fafb);
+    border: 1px solid var(--color-border-soft, #e5e7eb);
+    border-radius: var(--radius-sm, 8px);
+    }
+
+    .member-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    }
+
+    .member-name {
+    font-weight: 600;
     color: var(--color-ink);
+    font-size: 14px;
+    }
+
+    .member-email {
+    font-size: 12.5px;
+    color: #6b7280;
+    }
+
+    .role-badge {
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    }
+
+    .role-admin {
+    background: #1e3a2b;
+    color: #ffffff;
+    }
+
+    .role-member {
+    background: #e6f4ea;
+    color: #137333;
     }
 
     .alert-msg {
@@ -200,10 +233,17 @@
 @endsection
 
 @section('content')
+    @php
+        $rawMembers = $group->members ?? $group->users ?? collect();
+        $allMembers = collect([$group->owner])->merge($rawMembers)->filter()->unique('id');
+    @endphp
     <div class="group-details-page">
 
         @if(session('success'))
             <div class="alert-msg">✓ {{ session('success') }}</div>
+        @endif
+        @if(session('error'))
+            <div class="alert-msg" style="background: #fce8e6; color: #c5221f;">✗ {{ session('error') }}</div>
         @endif
 
         {{-- Group Header --}}
@@ -245,16 +285,11 @@
 
                 <select name="assigned_to" class="form-control">
                     <option value="">-- Assign To (Optional) --</option>
-                    @if(isset($group->users) && count($group->users) > 0)
-                        @foreach($group->users as $member)
-                            <option value="{{ $member->id }}">{{ $member->name }}</option>
-                        @endforeach
-                    @elseif(isset($group->members) && count($group->members) > 0)
-                        @foreach($group->members as $member)
-                            <option value="{{ $member->id }}">{{ $member->name }}</option>
-                        @endforeach
-                    @endif
+                    @foreach($allMembers as $member)
+                        <option value="{{ $member->id }}">{{ $member->name }}</option>
+                    @endforeach
                 </select>
+
                 <input type="date" name="date" class="form-control">
 
                 <button type="submit" class="btn-add-task">+ Add Task</button>
@@ -277,20 +312,44 @@
                 <p style="color: var(--color-ink-muted); text-align: center; margin: 20px 0;">No tasks added to this group yet.</p>
             @endif
         </div>
+            @php
+                $adminId = $group->user_id ?? $group->created_by ?? $group->owner_id ?? ($group->owner->id ?? null);
 
+                $rawMembers = $group->users ?? $group->members ?? collect();
+
+                if ($group->owner) {
+                    $rawMembers->push($group->owner);
+                }
+
+                $allMembers = $rawMembers->filter()->unique('id');
+            @endphp
         {{-- Members Section --}}
-        <div class="section-card">
-            <h2 class="section-title">👥 Group Members ({{ $group->users ? $group->users->count() : 1 }})</h2>
-            <div class="members-list">
-                @if($group->users)
-                    @foreach($group->users as $member)
-                        <span class="member-chip">
-                        👤 {{ $member->name }}
+            {{-- Members Section --}}
+            <div class="section-card">
+                <h2 class="section-title">👥 Group Members ({{ $allMembers->count() }})</h2>
+                <div class="members-list">
+                    @foreach($allMembers as $member)
+                        <div class="member-item">
+                            <div class="member-info">
+                                <span class="member-name">👤 {{ $member->name }}</span>
+                                @if($member->email)
+                                    <span class="member-email">({{ $member->email }})</span>
+                                @endif
+                            </div>
+
+                            @if((int) $member->id === (int) $group->user_id)
+                                <span class="role-badge role-admin" style="background: #1e3a2b; color: #ffffff; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700;">
+                        ADMIN
                     </span>
+                            @else
+                                <span class="role-badge role-member" style="background: #e6f4ea; color: #137333; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600;">
+                        MEMBER
+                    </span>
+                            @endif
+                        </div>
                     @endforeach
-                @endif
+                </div>
             </div>
-        </div>
 
     </div>
 @endsection
