@@ -4,6 +4,10 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\TaskController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\tasks\CreateTaskController;
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -13,4 +17,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout-all', [AuthController::class, 'logoutAll']);
     Route::get('/tasks', [TaskController::class, 'index']);
     Route::apiResource('tasks', TaskController::class);
+<<<<<<< Updated upstream
     Route::post('/tasks', [CreateTaskController::class, 'store']);});
+=======
+    Route::post('/tasks', [CreateTaskController::class, 'store']);
+});
+>>>>>>> Stashed changes
